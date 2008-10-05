@@ -5,7 +5,6 @@
     <script type="text/javascript" src="lib/firebugx.js"></script>
     <script type="text/javascript" src="lib/mootools-1.2-core-nc.js"></script>
     <script type="text/javascript" src="lib/mootools-1.2-more-nc.js"></script>
-	<!--[if IE]><script type="text/javascript" src="lib/excanvas.js"></script><![endif]-->
 	<script type="text/javascript" src="js/JSF_Util.js"></script>
     <script type="text/javascript" src="js/JSF_Renderer.js"></script>
     <script type="text/javascript" src="js/JSF_Selector.js"></script>
@@ -32,15 +31,14 @@
         
         <div id="workspace">
             <canvas id="fractal" width="300" height="300"></canvas>
+            <div id="rendering">rendering...</div>
             <div id="options"></div>
         </div>
         
         <div id="timeline">
             <div id="history"></div>
-            <div id="play">PLAY</div>
+            <div id="play"></div>
         </div>
-        
-    	<div id="rendering" style="position: absolute; border: 1px solid white; top: 20px; left: 190px; width: 100px; padding: 3px; background: black; opacity: 0.7; color: #fff; font-family: Arial; font-size: 14px; font-weight: bold; border: 1px solid #white;">Zooming...</div>
         
     </div>
 </body>

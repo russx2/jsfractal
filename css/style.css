@@ -36,6 +36,18 @@ body * {
     border: 2px solid #ddd;
 }
 
+#workspace #rendering {
+    position: absolute;
+    width: 100px;
+    left: 2px;
+    top: 20px;
+    background: #fff;
+    opacity: 0.5;
+    color: #000;
+    border: 1px solid #fff;
+    font-weight: bold;
+}
+
 #timeline {
     position: relative;
 }
@@ -69,7 +81,11 @@ body * {
     width: 50px;
     height: 100%;
     border: 2px solid #ddd;
-    
+    background: #fff url(../img/play.png) no-repeat;
+}
+
+#timeline #play:hover {
+    background-color: #ddd;
 }
 
 #workspace #options {
@@ -80,5 +96,3 @@ body * {
     height: 298px;
     border: 2px solid #ddd;
 }
-
-#play { border: 2px solid red; background: grey; color: #fff; }

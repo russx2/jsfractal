@@ -36,15 +36,18 @@ var JSF_GUI = new Class({
 
         var obj_zoom = {
             left: obj_canvas_coords.x[0],
-            right: 300 - obj_canvas_coords.x[1],
+            right: this.elm_canvas.getProperty('width') - obj_canvas_coords.x[1],
             top: obj_canvas_coords.y[0],
-            bottom: 300 - obj_canvas_coords.y[1]
+            bottom: this.elm_canvas.getProperty('height') - obj_canvas_coords.y[1]
         };
 
         this._zoom_preview(elm_canvas, obj_zoom, obj_canvas_coords, fun_callback, 0);
 	},
     
     _zoom_preview: function(elm_canvas, obj_zoom_coords, obj_hack, fun_callback, i) {
+
+        var int_screen_width = this.elm_canvas.getProperty('width');
+        var int_screen_height = this.elm_canvas.getProperty('height');
 
         // tmp
         var obj_canvas_coords = obj_zoom_coords;
@@ -57,10 +60,10 @@ var JSF_GUI = new Class({
 
         var flt_x0 = (i * (obj_canvas_coords.left / 40));
         var flt_y0 = (i * (obj_canvas_coords.top / 40));
-        var flt_x1 = 300 - ((obj_canvas_coords.right / 40) * i);
-        var flt_y1 = 300 - ((obj_canvas_coords.bottom / 40) * i);
+        var flt_x1 = int_screen_width - ((obj_canvas_coords.right / 40) * i);
+        var flt_y1 = int_screen_height - ((obj_canvas_coords.bottom / 40) * i);
         
-        this.obj_canvas_ctx.drawImage(elm_canvas, flt_x0, flt_y0, flt_x1 - flt_x0, flt_y1 - flt_y0, 0, 0, 300, 300);
+        this.obj_canvas_ctx.drawImage(elm_canvas, flt_x0, flt_y0, flt_x1 - flt_x0, flt_y1 - flt_y0, 0, 0, int_screen_width, int_screen_height);
     
         this._zoom_preview.delay(5, this, [elm_canvas, obj_zoom_coords, obj_hack, fun_callback, i + 1]);
     },

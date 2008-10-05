@@ -11,12 +11,6 @@ var JSFractal = new Class({
     obj_history: null,
 	obj_gui: null,
     
-    // rendering history (rendered canvas elements and coordinates)
-    //arr_history: [],
-    
-    // stores current index of the history the user is viewing
-    //int_history_idx: 0,
-    
     // stores the most recently selected canvas coordinates
     obj_canvas_coords: null,
     
@@ -25,6 +19,9 @@ var JSFractal = new Class({
 		x: [-2.1, 0.9],
         y: [-1.5, 1.5]
 	},
+    
+    // set during animations etc. in order to prevent GUI manipulation
+    boo_locked: false,
 	
 
 	initialize: function(str_canvas_id, str_history_id) {
@@ -59,6 +56,8 @@ var JSFractal = new Class({
 	
 	render: function(obj_selection_coords) {
 
+        this._lock(true);
+
         // calculate plane coords from the (canvas based) selection coords
         var obj_plane_coords = JSF_Util.canvas_coords_to_fractal(this.str_canvas_id, this.obj_plane_coords, obj_selection_coords);
 
@@ -72,24 +71,40 @@ var JSFractal = new Class({
     
     _event_render_complete: function(int_duration) { 
 
+        // TODO: move to gui
         $('rendering').setStyle('display', 'none');
   
+        // add this newly rendered fractal to the history
         this.obj_history.add(this.obj_plane_coords, this.obj_canvas_coords);
         
+        this._lock(false);
  
         /*console.info('Render complete in: ' + int_duration + 'ms');*/ 
     },
 	
 	_event_selection: function(obj_selection_coords) {
+        
+        if(this._is_locked()) {
+            return;
+        }
+
+        this._lock(true);
+                
+        // remove any history after this item
+        this.obj_history.delete_after_active();
 
 		// show the preview and render
-		this.obj_gui.zoom_preview(/*this.arr_history[this.arr_history.length - 1].elm_canvas*/ this.obj_history.arr_history.length - 1, obj_selection_coords, this.render.bind(this));
-        //this.render(obj_selection_coords);
-        
+		this.obj_gui.zoom_preview(this.obj_history.get_active(), obj_selection_coords, this.render.bind(this));
+
+        // TODO: move to gui
         $('rendering').setStyle('display', 'block');
 	},
 
     _event_go_history: function(int_history_idx) {
+
+        if(this._is_locked()) {
+            return;
+        }
 
         var obj_history = this.obj_history.get(int_history_idx);
 
@@ -105,10 +120,16 @@ var JSFractal = new Class({
     
     __play: function() {
         
+        if(this._is_locked()) {
+            return true;
+        }
+        
         // we can't proceed if there's no history to play
         if(this.obj_history.count() <= 1) {
             return;
         }
+        
+        this._lock(true);
         
         this.obj_gui.__play(this.show_current.bind(this));
     },
@@ -126,5 +147,16 @@ var JSFractal = new Class({
         
         // set active
         this.obj_history.set_active(this.obj_history.count() - 1);
+        
+        this._lock(false);
+    },
+    
+    _lock: function(boo) {
+        this.boo_locked = boo;
+    },
+    
+    _is_locked: function() {
+        return this.boo_locked;
     }
+
 });

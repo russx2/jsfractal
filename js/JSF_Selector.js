@@ -20,6 +20,7 @@ var JSF_Selector = new Class({
 		this.reset();
 		
 		this.elm_selection.addEvent('mousedown', this._event_start.bind(this));
+        this.elm_selection.addEvent('mouseup', this.reset.bind(this));
 		
 		// setup dragging functionality
 		this.obj_drag = new Drag(this.elm_selection, {
@@ -34,7 +35,7 @@ var JSF_Selector = new Class({
 	},
 	
 	reset: function() {
-		
+
 		var obj_container_coords = this.obj_container_coords;
 		
         // hide the selection area from view but allow it to still be
@@ -116,9 +117,7 @@ var JSF_Selector = new Class({
 			y: [int_y0, int_y1]
 		});
 		
-        console.info('x = ' + (int_x1 - int_x0) + ', y = ' + (int_y1 - int_y0));
-
-		this.reset();
+        this.reset();
 	}
 	
 });

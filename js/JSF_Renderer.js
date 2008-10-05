@@ -57,13 +57,17 @@ var JSF_Renderer = new Class({
 
 	render: function(obj_plane_coords, int_y_start) {
 	
+        // cache canvas size
+        var int_screen_width = this.elm_canvas.getProperty('width');
+        var int_screen_height = this.elm_canvas.getProperty('height');
+
 		if(!int_y_start) {
 			int_y_start = 0;
 			this.int_start_time = $time();
             
             if(this.obj_canvas_ctx.getImageData) {
-                this.obj_canvas_ctx.clearRect(0,0,300,300);
-                this.buffer = this.obj_canvas_ctx.getImageData(0, 0, 300, 300);
+                this.obj_canvas_ctx.clearRect(0, 0, int_screen_width, int_screen_height);
+                this.buffer = this.obj_canvas_ctx.getImageData(0, 0, int_screen_width, int_screen_height);
             }
             else {
                 this.buffer = null;
@@ -71,11 +75,7 @@ var JSF_Renderer = new Class({
 		}
 	
 	  	var int_start_time = $time();
-	
-		// pre-calculate some values for optimisation
-		var int_screen_width = this.elm_canvas.width;
-        var int_screen_height = this.elm_canvas.height;
-	
+
 		var int_plane_x_size = Math.abs(obj_plane_coords.x[1] - obj_plane_coords.x[0]);
         var int_plane_y_size = Math.abs(obj_plane_coords.y[1] - obj_plane_coords.y[0]);
 	
@@ -141,23 +141,25 @@ var JSF_Renderer = new Class({
                         this.obj_canvas_ctx.fillStyle = 'rgb(' + this.arr_colours[i][0] + ',' + this.arr_colours[i][1] + ',' + this.arr_colours[i][2] + ')';
                     }
                     
-                    this.obj_canvas_ctx.fillRect(int_x * 1, int_y * 1, 1, 1);
+                    this.obj_canvas_ctx.fillRect(int_x, int_y, 1, 1);
                 }
                 else {
                
     				// plot the point
-    				//				
-    				buffer.data[((int_y * 300 + int_x) * 4) + 0 ] = boo_in_set ? 0 : this.arr_colours[i][0];
-    				buffer.data[((int_y * 300 + int_x) * 4) + 1] = boo_in_set ? 0 : this.arr_colours[i][1];
-    				buffer.data[((int_y * 300 + int_x) * 4) + 2] = boo_in_set ? 0 : this.arr_colours[i][2];
-    				buffer.data[((int_y * 300 + int_x) * 4) + 3] = 255;
+                    var int_offset = (int_y * int_screen_width + int_x) * 4;
+                    var arr_colour = this.arr_colours[i];
+                    
+    				buffer.data[int_offset] = boo_in_set ? 0 : arr_colour[0];
+    				buffer.data[int_offset + 1] = boo_in_set ? 0 : arr_colour[1];
+    				buffer.data[int_offset + 2] = boo_in_set ? 0 : arr_colour[2];
+    				buffer.data[int_offset + 3] = 255;
                 }
 				
 			}
 		}
 		
         if(this.obj_canvas_ctx.getImageData) {
-    		this.obj_canvas_ctx.clearRect(0,0,300,300);
+    		this.obj_canvas_ctx.clearRect(0, 0, int_screen_width, int_screen_height);
     		this.obj_canvas_ctx.putImageData(buffer, 0, 0);	
         }
 		
