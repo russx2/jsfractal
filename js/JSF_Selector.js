@@ -14,7 +14,7 @@ var JSF_Selector = new Class({
 
 		// create selection element and add to the dom
 		this.elm_selection = new Element('div');
-		this.elm_selection.inject(str_container_id, 'after');
+		this.elm_selection.inject($(str_container_id).getParent(), 'after');
 		
 		// set initial state
 		this.reset();
@@ -24,10 +24,11 @@ var JSF_Selector = new Class({
 		// setup dragging functionality
 		this.obj_drag = new Drag(this.elm_selection, {
 			
-			modifiers: { x: 'width', y: 'height' },
-	
+			modifiers: { 
+                x: 'width', 
+                y: 'height' 
+            },
 			onDrag: this._event_drag.bindWithEvent(this),
-			
 			onComplete: this._event_complete.bindWithEvent(this)
 		});    
 	},
@@ -36,13 +37,16 @@ var JSF_Selector = new Class({
 		
 		var obj_container_coords = this.obj_container_coords;
 		
+        // hide the selection area from view but allow it to still be
+        // the top clickable layer
 		this.elm_selection.setStyles({
 			position: 'absolute',
 			top: obj_container_coords.top,
 			left: obj_container_coords.left,
 			width: obj_container_coords.width - 1,
 			height: obj_container_coords.height - 1,
-			border: 0
+            border: 0,
+            background: 'transparent'
 		});
 	},
 	
@@ -51,13 +55,15 @@ var JSF_Selector = new Class({
     	var int_x = obj_event.page.x;
     	var int_y = obj_event.page.y;
     	
-    	// move the selection element to where the mouse was pressed
+    	// move the selection element to where the user clicked
     	this.elm_selection.setStyles({
     		left: int_x,
     		top: int_y,
     		width: 0,
     		height: 0,
-    		border: '1px solid blue'
+    		border: '1px dashed red',
+            background: 'white',
+            opacity: 0.3
     	});
     	
     	// calculate the limits for this selection based on the starting location
@@ -89,15 +95,29 @@ var JSF_Selector = new Class({
 		var obj_coords = this.elm_selection.getCoordinates();
 		var obj_container_coords = this.obj_container_coords;
 		
-		//
-		// TODO: Ensure coordinates are a perfect square and adjust as necessary
-		//
-		
+        var int_x0 = obj_coords.left - obj_container_coords.left;
+        var int_x1 = obj_coords.right - obj_container_coords.left;
+        var int_y0 = obj_coords.top - obj_container_coords.top;
+        var int_y1 = obj_coords.bottom - obj_container_coords.top;
+        
+		// ensure coordinates are a perfect square and adjust as necessary
+        var int_width = int_x1 - int_x0;
+        var int_height = int_y1 - int_y0;
+        
+        if(int_width > int_height) {
+            int_x1 -= (int_width - int_height);
+        }
+        else if(int_height > int_width) {
+            int_y1 -= (int_height - int_width);
+        }
+        
 		this.fireEvent('onSelection', { 
-			x: [obj_coords.left - obj_container_coords.left, obj_coords.right - obj_container_coords.left],
-			y: [obj_coords.top - obj_container_coords.top, obj_coords.bottom - obj_container_coords.top]
+			x: [int_x0, int_x1],
+			y: [int_y0, int_y1]
 		});
 		
+        console.info('x = ' + (int_x1 - int_x0) + ', y = ' + (int_y1 - int_y0));
+
 		this.reset();
 	}
 	
