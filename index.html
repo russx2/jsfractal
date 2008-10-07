@@ -15,14 +15,37 @@
 
         window.addEvent('domready', function() {
 
-			app = new JSFractal('fractal', 'history');
+            // compatibility check
+            if (!$defined($('fractal').getContext)) {
+            
+                // show non-compatible message
+                $('wrapper').setStyle('display', 'none');
+                $('non-compatible').setStyle('display', 'block');
+            }
+            else {
+             
+                new JSFractal('fractal', 'history');
+            }
         });
 
     </script>
     <link type="text/css" rel="stylesheet" href="css/style.css"></link>
 </head>
 <body>
-	
+    
+    <!-- for browsers without canvas -->
+    <div id="non-compatible">
+        <h1>Sorry!</h1>
+        <p>It appears your browser does not support the <em>canvas</em> element. It's quite likely you're using a version of Internet Explorer.</p>
+        <p>To view this content, please use the latest version of one of these browsers:</p>
+        <ul>
+            <li><a href="http://www.mozilla.com/">Mozilla Firefox</a></li>
+            <li><a href="http://www.apple.com/safari/">Safari</a></li>
+            <li><a href="http://www.opera.com/products/desktop/">Opera</a></li>
+        </ul>
+    </div>
+    
+    <!-- main fractal dom root -->
     <div id="wrapper">
         
         <div id="header">
@@ -31,7 +54,7 @@
         
         <div id="workspace">
             <canvas id="fractal" width="300" height="300"></canvas>
-            <div id="rendering">rendering...</div>
+            <div id="rendering"></div>
             <div id="options"></div>
         </div>
         

@@ -63,6 +63,8 @@ var JSF_GUI = new Class({
         var flt_x1 = int_screen_width - ((obj_canvas_coords.right / 40) * i);
         var flt_y1 = int_screen_height - ((obj_canvas_coords.bottom / 40) * i);
         
+        // TODO:
+        //console.info('bug here');
         this.obj_canvas_ctx.drawImage(elm_canvas, flt_x0, flt_y0, flt_x1 - flt_x0, flt_y1 - flt_y0, 0, 0, int_screen_width, int_screen_height);
     
         this._zoom_preview.delay(5, this, [elm_canvas, obj_zoom_coords, obj_hack, fun_callback, i + 1]);

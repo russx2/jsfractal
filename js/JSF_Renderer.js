@@ -40,18 +40,30 @@ var JSF_Renderer = new Class({
             //this.arr_colours[i] = new Color('#f00').mix([0,255,0], (100/this.NUM_TESTS) * i).mix([0,0,255], 100 - ((100/this.NUM_TESTS) * i));
 
             var v = 765 * i / this.NUM_TESTS;
+            var arr_colour;
             
             if (v > 510) {
-                this.arr_colours[i] = [255, 255, (v % 255).toInt()];
+                arr_colour = [255, 255, (v % 255).toInt()];
             }
             else {
                 if (v > 255) {
-                    this.arr_colours[i] = [255, (v % 255).toInt(), 0];
+                    arr_colour = [255, (v % 255).toInt(), 0];
                 }
                 else {
-                    this.arr_colours[i] = [(v % 255).toInt(), 0, 0];
+                    arr_colour = [(v % 255).toInt(), 0, 0];
                 }
             }
+            
+            // force last index to black (represents non-escaping orbits - i.e. part of the set)
+            if(i == this.NUM_TESTS -1) {
+                arr_colour = [0, 0, 0];
+            }
+            
+            // [0] Red component
+            // [1] Green component
+            // [2] Blue component
+            // [3] RGB(r,g,b) string (used for browsers without canvas getImageData method)
+            this.arr_colours[i] = arr_colour.concat(['rgb(' + arr_colour[0] + ',' + arr_colour[1] + ',' + arr_colour[2] + ')']);
         }
 	},
 
@@ -107,16 +119,14 @@ var JSF_Renderer = new Class({
 				// calculate iterations
 				var z_x = plane_x;
 				var z_y = plane_y;
-				var boo_in_set = true;
-	          
-				for(var i = 0; i < this.NUM_TESTS; i++) {
+				
+				for(var i = 0; i < this.NUM_TESTS - 1; i++) {
 				
 					var int_z_x_squared = z_x * z_x;
 					var int_z_y_squared = z_y * z_y;
 					
+                    // has this coordinate escaped? we can skip further calculations if so
                     if(int_z_x_squared + int_z_y_squared > 4) {
-                    
-                        boo_in_set = false;
                         break;
                     }
                     
@@ -124,34 +134,23 @@ var JSF_Renderer = new Class({
                     z_y = 2 * z_x * z_y + plane_y;
                     z_x = int_z_x_squared - int_z_y_squared + plane_x;      
 				}
-				
-				// sanity check
-				if (i >= this.NUM_TESTS) {
-					//i = i % this.NUM_TESTS;
-					i = this.NUM_TESTS - 1;
-				}
+                
+                // determine colour array to use
+                var arr_colour = this.arr_colours[i];
 		
 	            if(!this.obj_canvas_ctx.getImageData) {
                     
-                    // is it in the set?
-                    if(boo_in_set) {
-                        this.obj_canvas_ctx.fillStyle = 'black';
-                    }
-                    else {
-                        this.obj_canvas_ctx.fillStyle = 'rgb(' + this.arr_colours[i][0] + ',' + this.arr_colours[i][1] + ',' + this.arr_colours[i][2] + ')';
-                    }
-                    
+                    this.obj_canvas_ctx.fillStyle = arr_colour[3];
                     this.obj_canvas_ctx.fillRect(int_x, int_y, 1, 1);
                 }
                 else {
                
     				// plot the point
                     var int_offset = (int_y * int_screen_width + int_x) * 4;
-                    var arr_colour = this.arr_colours[i];
-                    
-    				buffer.data[int_offset] = boo_in_set ? 0 : arr_colour[0];
-    				buffer.data[int_offset + 1] = boo_in_set ? 0 : arr_colour[1];
-    				buffer.data[int_offset + 2] = boo_in_set ? 0 : arr_colour[2];
+
+    				buffer.data[int_offset] = arr_colour[0];
+    				buffer.data[int_offset + 1] = arr_colour[1];
+    				buffer.data[int_offset + 2] = arr_colour[2];
     				buffer.data[int_offset + 3] = 255;
                 }
 				

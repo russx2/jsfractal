@@ -17,6 +17,10 @@ body * {
     margin: 2em auto;
 }
 
+#non-compatible {
+    display: none;
+}
+
 #header {
     background: #ddd;
 }
@@ -39,13 +43,10 @@ body * {
 #workspace #rendering {
     position: absolute;
     width: 100px;
-    left: 2px;
-    top: 20px;
-    background: #fff;
-    opacity: 0.5;
-    color: #000;
-    border: 1px solid #fff;
-    font-weight: bold;
+    height: 100px;
+    left: 192px;
+    top: 10px;
+    background: transparent url(../img/rendering.png) no-repeat;
 }
 
 #timeline {
