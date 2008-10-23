@@ -25,49 +25,80 @@ var JSF_GUI = new Class({
         this.obj_canvas_ctx = $(str_canvas_id).getContext('2d');
 	},
 	
-	zoom_preview: function(int_history_idx, obj_canvas_coords, fun_callback) {
+	zoom_preview: function(int_history_idx, obj_selection_coords, fun_callback) {
 		
-        var obj_history = this.obj_history.get(int_history_idx);
-
-        var elm_canvas = obj_history.elm_canvas;
-        
-		var int_selection_width = obj_canvas_coords.x[1] - obj_canvas_coords.x[0];
-		var int_selection_height = obj_canvas_coords.y[1] - obj_canvas_coords.y[0];
-
-        var obj_zoom = {
-            left: obj_canvas_coords.x[0],
-            right: this.elm_canvas.getProperty('width') - obj_canvas_coords.x[1],
-            top: obj_canvas_coords.y[0],
-            bottom: this.elm_canvas.getProperty('height') - obj_canvas_coords.y[1]
-        };
-
-        this._zoom_preview(elm_canvas, obj_zoom, obj_canvas_coords, fun_callback, 0);
-	},
-    
-    _zoom_preview: function(elm_canvas, obj_zoom_coords, obj_hack, fun_callback, i) {
-
         var int_screen_width = this.elm_canvas.getProperty('width');
         var int_screen_height = this.elm_canvas.getProperty('height');
+        
+        // retrieve the image and coordinates we're zooming into from the history
+        var obj_history = this.obj_history.get(int_history_idx);
+        var elm_canvas = obj_history.elm_canvas;
+        
+        /*
+        // the number of iterations for the zoom is dependent on how far we're zooming
+        // in (this means, with a constant "frame rate", the deeper the zoom, the longer
+        // the animation will take)
+        var int_zoom_area = (obj_selection_coords.x[1] - obj_selection_coords.x[0]) * (obj_selection_coords.y[1] - obj_selection_coords.y[0]);
+        var int_screen_area = int_screen_width * int_screen_height;
+        
+        // thus, number of iterations is linked to the ratio between the selection and the overall canvas width
+        //var flt_ratio = Math.sqrt(int_screen_area / int_zoom_area).round();
+        
+        //var flt_ratio = (300 / (obj_selection_coords.x[1] - obj_selection_coords.x[0])).round();
+        var flt_ratio = (obj_selection_coords.x[1] - obj_selection_coords.x[0]).round();
 
-        // tmp
-        var obj_canvas_coords = obj_zoom_coords;
+        // 0 - 150
+        */
+       
+        // calculate how many iterations the animation should take (the deeper the zoom the more
+        // iterations in order to maintain consistent animation timing)
+        var int_travel = (int_screen_width - (obj_selection_coords.x[1] - obj_selection_coords.x[0]));
+        var int_iterations = (int_travel / 5).round();
+        
+        // pre-calculate some necessary values for the zoom animation method
+        var obj_zoom_values = {
+            
+            // calculate the bounding rectangle for the area we're zooming into
+            left: obj_selection_coords.x[0],
+            right: int_screen_width - obj_selection_coords.x[1],
+            top: obj_selection_coords.y[0],
+            bottom: int_screen_height - obj_selection_coords.y[1],
+            
+            // canvas dimensions
+            screen_width: int_screen_width,
+            screen_height: int_screen_height,
+            
+            // selection coordinates
+            selection: obj_selection_coords,
+            
+            // number of frames required for the zoom animation
+            iterations: int_iterations
+        };
+        
+        // execute the zoom
+        this._zoom_preview(elm_canvas, obj_zoom_values, fun_callback, 0);
+	},
+    
+    _zoom_preview: function(elm_canvas, obj_zoom_values, fun_callback, i) {
 
-        if(i == 41) {
+        var int_screen_width = obj_zoom_values.screen_width;
+        var int_screen_height = obj_zoom_values.screen_height;
+        var int_iterations = obj_zoom_values.iterations;
+        
+        if(i == int_iterations) {
             
             // fire completion callback
-            return fun_callback ? fun_callback(obj_hack) : null;
+            return fun_callback ? fun_callback() : null;
         }
 
-        var flt_x0 = (i * (obj_canvas_coords.left / 40));
-        var flt_y0 = (i * (obj_canvas_coords.top / 40));
-        var flt_x1 = int_screen_width - ((obj_canvas_coords.right / 40) * i);
-        var flt_y1 = int_screen_height - ((obj_canvas_coords.bottom / 40) * i);
-        
-        // TODO:
-        //console.info('bug here');
+        var flt_x0 = (i * (obj_zoom_values.left / int_iterations));
+        var flt_y0 = (i * (obj_zoom_values.top / int_iterations));
+        var flt_x1 = int_screen_width - ((obj_zoom_values.right / int_iterations) * i);
+        var flt_y1 = int_screen_height - ((obj_zoom_values.bottom / int_iterations) * i);
+
         this.obj_canvas_ctx.drawImage(elm_canvas, flt_x0, flt_y0, flt_x1 - flt_x0, flt_y1 - flt_y0, 0, 0, int_screen_width, int_screen_height);
     
-        this._zoom_preview.delay(5, this, [elm_canvas, obj_zoom_coords, obj_hack, fun_callback, i + 1]);
+        this._zoom_preview.delay(5, this, [elm_canvas, obj_zoom_values, fun_callback, i + 1]);
     },
     
     __play: function(fun_callback) {

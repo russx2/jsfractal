@@ -39,18 +39,18 @@ var JSF_Renderer = new Class({
 
             //this.arr_colours[i] = new Color('#f00').mix([0,255,0], (100/this.NUM_TESTS) * i).mix([0,0,255], 100 - ((100/this.NUM_TESTS) * i));
 
-            var v = 765 * i / this.NUM_TESTS;
+            var int_mod = 765 * i / this.NUM_TESTS;
             var arr_colour;
             
-            if (v > 510) {
-                arr_colour = [255, 255, (v % 255).toInt()];
+            if (int_mod > 510) {
+                arr_colour = [255, 255, (int_mod % 255).toInt()];
             }
             else {
-                if (v > 255) {
-                    arr_colour = [255, (v % 255).toInt(), 0];
+                if (int_mod > 255) {
+                    arr_colour = [255, (int_mod % 255).toInt(), 0];
                 }
                 else {
-                    arr_colour = [(v % 255).toInt(), 0, 0];
+                    arr_colour = [(int_mod % 255).toInt(), 0, 0];
                 }
             }
             
@@ -140,23 +140,27 @@ var JSF_Renderer = new Class({
 		
 	            if(!this.obj_canvas_ctx.getImageData) {
                     
+                    // rgb string is stored in the 4th index
                     this.obj_canvas_ctx.fillStyle = arr_colour[3];
                     this.obj_canvas_ctx.fillRect(int_x, int_y, 1, 1);
                 }
                 else {
                
-    				// plot the point
+    				// plot the point at the correct index in the buffer
                     var int_offset = (int_y * int_screen_width + int_x) * 4;
 
     				buffer.data[int_offset] = arr_colour[0];
     				buffer.data[int_offset + 1] = arr_colour[1];
     				buffer.data[int_offset + 2] = arr_colour[2];
+                    
+                    // always full opacity
     				buffer.data[int_offset + 3] = 255;
                 }
-				
 			}
 		}
 		
+        // if we're directly manipulating the pixels we need to copy over what we've
+        // calculated thus far
         if(this.obj_canvas_ctx.getImageData) {
     		this.obj_canvas_ctx.clearRect(0, 0, int_screen_width, int_screen_height);
     		this.obj_canvas_ctx.putImageData(buffer, 0, 0);	

@@ -94,7 +94,7 @@ var JSFractal = new Class({
         this.obj_history.delete_after_active();
 
 		// show the preview and render
-		this.obj_gui.zoom_preview(this.obj_history.get_active(), obj_selection_coords, this.render.bind(this));
+		this.obj_gui.zoom_preview(this.obj_history.get_active(), obj_selection_coords, this.render.bind(this, obj_selection_coords));
 
         // TODO: move to gui
         $('rendering').setStyle('display', 'block');
