@@ -23,5 +23,78 @@ JSF_Util = {
         };
 	
 		return obj_new_coords;
-	}
+	},
+    
+    // taken from: http://neil.fraser.name/software/bmp_lib/bmp_lib.js
+    multi_byte_encode: function(number, bytes) {
+        
+        if (number < 0 || bytes < 0) {
+            throw('Negative numbers not allowed.');
+        }
+        
+        var oldbase = 1;
+        var string = '';
+        
+        for(var x = 0; x < bytes; x++) {
+            
+            if (number == 0) {
+                byte = 0;
+            } 
+            else {
+                base = oldbase * 256;
+                byte = number % base;
+                number = number - byte;
+                byte = byte / oldbase;
+                oldbase = base;
+            }
+            
+            string += String.fromCharCode(byte);
+        }
+        
+        if (number != 0) {
+            throw('Overflow, number too big for string length');
+        }
+        
+        return string;
+    },
+    
+    base64_encode: function(str) {
+        
+        if(window.btoa) {
+            return btoa(str);
+        }
+        var base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+        var out, i, len;
+        var c1, c2, c3;
+    
+        len = str.length;
+        i = 0;
+        out = "";
+        while(i < len) {
+        c1 = str.charCodeAt(i++) & 0xff;
+        if(i == len)
+        {
+            out += base64EncodeChars.charAt(c1 >> 2);
+            out += base64EncodeChars.charAt((c1 & 0x3) << 4);
+            out += "==";
+            break;
+        }
+        c2 = str.charCodeAt(i++);
+        if(i == len)
+        {
+            out += base64EncodeChars.charAt(c1 >> 2);
+            out += base64EncodeChars.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
+            out += base64EncodeChars.charAt((c2 & 0xF) << 2);
+            out += "=";
+            break;
+        }
+        c3 = str.charCodeAt(i++);
+        out += base64EncodeChars.charAt(c1 >> 2);
+        out += base64EncodeChars.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
+        out += base64EncodeChars.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >>6));
+        out += base64EncodeChars.charAt(c3 & 0x3F);
+        }
+        return out;
+    }
 }

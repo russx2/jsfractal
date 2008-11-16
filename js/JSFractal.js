@@ -31,6 +31,7 @@ var JSFractal = new Class({
         this.obj_canvas_ctx = $(str_canvas_id).getContext('2d');
 
 		// initialise the components
+        var obj_detect = new JSF_Detect(str_canvas_id);
 		var obj_renderer = new JSF_Renderer(str_canvas_id);
         var obj_selector = new JSF_Selector(str_canvas_id);
         var obj_history = new JSF_History(str_canvas_id, str_history_id);
@@ -79,7 +80,7 @@ var JSFractal = new Class({
         
         this._lock(false);
  
-        /*console.info('Render complete in: ' + int_duration + 'ms');*/ 
+        console.info('Render complete in: ' + int_duration + 'ms');
     },
 	
 	_event_selection: function(obj_selection_coords) {

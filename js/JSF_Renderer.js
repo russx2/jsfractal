@@ -4,13 +4,20 @@ var JSF_Renderer = new Class({
 	Implements: Events,
 
 	/*
-	* Configuration
-	*/
+	 * Configuration
+	 */
 	NUM_TESTS: 200,
+    
+    /*
+     * Rendering strategies
+     */
+    RENDER_DIRECT: false,
+    RENDER_DATA_URL: false,
+    RENDER_DRAW_RECT: false,
 
 	/*
-	* Members
-	*/
+	 * Members
+	 */
 	elm_canvas: null,
 	obj_canvas_ctx: null,
 	
@@ -24,6 +31,8 @@ var JSF_Renderer = new Class({
 	// stores when a render was started so we can return the time taken once completed
 	int_start_time: null,
 	
+    // used by the rendering process (actual use depends on the render mode - used for
+    // dataURL and drawRect rendering
 	buffer: null,
 
 	initialize: function(str_canvas_id) {
@@ -31,6 +40,17 @@ var JSF_Renderer = new Class({
 		// store canvas and drawing context reference
 		this.elm_canvas = $(str_canvas_id);
 		this.obj_canvas_ctx = this.elm_canvas.getContext('2d');
+        
+        // determine browser capabilities and choose the fastest rendering strategy
+        if(JSF_Detect.HAS_PIXEL_MANIPULATION) {
+            this.RENDER_DIRECT = true;
+        }
+        else if(JSF_Detect.HAS_DATA_URLS) {
+            this.RENDER_DATA_URL = true;
+        }
+        else {
+            this.RENDER_DRAW_RECT = true;
+        }
 		
 		// pre-calculate colour table for non-Mandelbrot points
 		this.arr_colours = new Array();
@@ -77,11 +97,16 @@ var JSF_Renderer = new Class({
 			int_y_start = 0;
 			this.int_start_time = $time();
             
-            if(this.obj_canvas_ctx.getImageData) {
+            if(this.RENDER_DIRECT) {
                 this.obj_canvas_ctx.clearRect(0, 0, int_screen_width, int_screen_height);
                 this.buffer = this.obj_canvas_ctx.getImageData(0, 0, int_screen_width, int_screen_height);
             }
+            else if(this.RENDER_DATA_URL){
+                
+                this.buffer = [];
+            }
             else {
+                
                 this.buffer = null;
             }
 		}
@@ -98,12 +123,16 @@ var JSF_Renderer = new Class({
 		var obj_calculated = this.obj_calculated;
 
 	    for(var int_y = int_y_start; int_y < int_screen_height; int_y++) {
-	
+            
+            if(this.RENDER_DATA_URL) {
+                this.buffer[int_y] = '';
+            }   
+            
 			// we've processed a row, do we now need to take a break to give the browser UI a chance to update?
 			if(($time() - int_start_time) > 5000) {
 				console.info('Taking a break on row: ' + int_y);
 				
-                if(this.obj_canvas_ctx.getImageData) {
+                if(this.RENDER_DIRECT) {
                     this.obj_canvas_ctx.putImageData(buffer, 0, 0);
                 }
                 
@@ -138,36 +167,68 @@ var JSF_Renderer = new Class({
                 // determine colour array to use
                 var arr_colour = this.arr_colours[i];
 		
-	            if(!this.obj_canvas_ctx.getImageData) {
+	            if(this.RENDER_DIRECT) {
+                    
+                    // plot the point at the correct index in the buffer
+                    var int_offset = (int_y * int_screen_width + int_x) * 4;
+
+                    buffer.data[int_offset] = arr_colour[0];
+                    buffer.data[int_offset + 1] = arr_colour[1];
+                    buffer.data[int_offset + 2] = arr_colour[2];
+                    
+                    // always full opacity
+                    buffer.data[int_offset + 3] = 255; 
+                }
+                else if(this.RENDER_DATA_URL) {
+               
+    				this.buffer[int_y] += String.fromCharCode(arr_colour[2], arr_colour[1], arr_colour[0]);
+                }
+                else {
                     
                     // rgb string is stored in the 4th index
                     this.obj_canvas_ctx.fillStyle = arr_colour[3];
                     this.obj_canvas_ctx.fillRect(int_x, int_y, 1, 1);
                 }
-                else {
-               
-    				// plot the point at the correct index in the buffer
-                    var int_offset = (int_y * int_screen_width + int_x) * 4;
-
-    				buffer.data[int_offset] = arr_colour[0];
-    				buffer.data[int_offset + 1] = arr_colour[1];
-    				buffer.data[int_offset + 2] = arr_colour[2];
-                    
-                    // always full opacity
-    				buffer.data[int_offset + 3] = 255;
-                }
 			}
 		}
 		
-        // if we're directly manipulating the pixels we need to copy over what we've
-        // calculated thus far
-        if(this.obj_canvas_ctx.getImageData) {
-    		this.obj_canvas_ctx.clearRect(0, 0, int_screen_width, int_screen_height);
-    		this.obj_canvas_ctx.putImageData(buffer, 0, 0);	
+        // if we're directly manipulating the pixels we can copy over what we've
+        // calculated thus far to show the user the progress
+        if(this.RENDER_DIRECT) {
+            
+            this.obj_canvas_ctx.clearRect(0, 0, int_screen_width, int_screen_height);
+            this.obj_canvas_ctx.putImageData(buffer, 0, 0);
+        }
+        else if(this.RENDER_DATA_URL) {
+            
+            this._render_data_url();
         }
 		
 		// we've completed the render - fire completion event, passing the time taken
-		this.fireEvent('onRenderComplete', ($time() - this.int_start_time));
-	}
-
+        if(this.RENDER_DATA_URL == false) {
+            this.fireEvent('onRenderComplete', ($time() - this.int_start_time));
+        }
+	},
+    
+    //http://neil.fraser.name/software/bmp_lib/bmp_lib.js
+    _render_data_url: function() {
+        
+         var str_bm_header = 'BMxxxx\0\0\0\0yyyy';
+         var str_bm_info = JSF_Util.multi_byte_encode(40,4) + JSF_Util.multi_byte_encode(300,4) + JSF_Util.multi_byte_encode(300,4) + '\x01\0' + JSF_Util.multi_byte_encode(24, 2) + '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0';
+         var str_data = this.buffer.reverse().join('');
+         var str_bm = str_bm_header + str_bm_info + str_data;
+        
+         str_bm = str_bm.replace(/yyyy/, JSF_Util.multi_byte_encode(str_bm_header.length + str_bm_info.length, 4));
+         str_bm = str_bm.replace(/xxxx/, JSF_Util.multi_byte_encode(str_data.length, 4));
+        
+         var obj_img = new Image();
+         obj_img.src = "data:image/bmp;base64," + JSF_Util.base64_encode(str_bm);
+         obj_img.onload = (function(obj_img){
+             this.obj_canvas_ctx.drawImage(obj_img, 0, 0);
+            
+             // we've completed the render - fire completion event, passing the time taken
+             this.fireEvent('onRenderComplete', ($time() - this.int_start_time));
+            
+         }).bind(this, obj_img);
+    }   
 });
