@@ -112,7 +112,7 @@ var JSF_Selector = new Class({
 	},
 	
 	_event_complete: function(obj_event) {
-				console.info('complete');
+				
 		var obj_coords = this.elm_selection.getCoordinates();
 		var obj_container_coords = $(this.str_container_id).getCoordinates();
 		
@@ -131,8 +131,6 @@ var JSF_Selector = new Class({
         else if(int_height > int_width) {
             int_y1 -= (int_height - int_width);
         }
-        
-        console.info('x0 = ' + int_x0 + ', y0 = ' + int_y0 + ' --- x1 = ' + int_x1 + ', y1 = ' +int_y1);
         
         // reset selection element and stop the drag event
         this.reset();

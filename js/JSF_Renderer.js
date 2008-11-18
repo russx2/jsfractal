@@ -7,19 +7,14 @@ var JSF_Renderer = new Class({
 	 * Configuration
 	 */
 	NUM_TESTS: 200,
-    
-    /*
-     * Rendering strategies
-     */
-    RENDER_DIRECT: false,
-    RENDER_DATA_URL: false,
-    RENDER_DRAW_RECT: false,
+    RENDER_TIMEOUT_BREAK: 5000,     // ms
 
 	/*
 	 * Members
 	 */
 	elm_canvas: null,
 	obj_canvas_ctx: null,
+    obj_render_strategy: null,
 	
 	// drag selection element and drag object
 	elm_select: null,
@@ -27,13 +22,6 @@ var JSF_Renderer = new Class({
 	
 	// stores a lookup of colours for non-Mandelbrot points (depending on escape speed)
 	arr_colours: null,
-	
-	// stores when a render was started so we can return the time taken once completed
-	int_start_time: null,
-	
-    // used by the rendering process (actual use depends on the render mode - used for
-    // dataURL and drawRect rendering
-	buffer: null,
 
 	initialize: function(str_canvas_id) {
 	
@@ -43,14 +31,16 @@ var JSF_Renderer = new Class({
         
         // determine browser capabilities and choose the fastest rendering strategy
         if(JSF_Detect.HAS_PIXEL_MANIPULATION) {
-            this.RENDER_DIRECT = true;
+            this.obj_render_strategy = new JSF_Render_Strategy__ImageData(this.obj_canvas_ctx); 
         }
         else if(JSF_Detect.HAS_DATA_URLS) {
-            this.RENDER_DATA_URL = true;
+            this.obj_render_strategy = new JSF_Render_Strategy__DataURL(this.obj_canvas_ctx);
         }
         else {
-            this.RENDER_DRAW_RECT = true;
+            this.obj_render_strategy = new JSF_Render_Strategy__DrawRect(this.obj_canvas_ctx);
         }
+        
+        this.obj_render_strategy.addEvent('onComplete', this._event_render_complete.bind(this));
 		
 		// pre-calculate colour table for non-Mandelbrot points
 		this.arr_colours = new Array();
@@ -88,29 +78,25 @@ var JSF_Renderer = new Class({
 	},
 
 	render: function(obj_plane_coords, int_y_start) {
-	
+
         // cache canvas size
         var int_screen_width = this.elm_canvas.getProperty('width');
         var int_screen_height = this.elm_canvas.getProperty('height');
 
+        // initialise ourselves if this is the first call in the chain of these
+        // render methods
 		if(!int_y_start) {
-			int_y_start = 0;
-			this.int_start_time = $time();
-            
-            if(this.RENDER_DIRECT) {
-                this.obj_canvas_ctx.clearRect(0, 0, int_screen_width, int_screen_height);
-                this.buffer = this.obj_canvas_ctx.getImageData(0, 0, int_screen_width, int_screen_height);
-            }
-            else if(this.RENDER_DATA_URL){
-                
-                this.buffer = [];
-            }
-            else {
-                
-                this.buffer = null;
-            }
+			
+            // start at first row
+            int_y_start = 0;
+
+            // initialise the rendering for the rows
+            this.obj_render_strategy.start(int_screen_width, int_screen_height);
 		}
 	
+        // we track our own time throughout this method to avoid triggering
+        // script timeout warnings (we give the processor when the time reaches
+        // a certain point)
 	  	var int_start_time = $time();
 
 		var int_plane_x_size = Math.abs(obj_plane_coords.x[1] - obj_plane_coords.x[0]);
@@ -118,28 +104,24 @@ var JSF_Renderer = new Class({
 	
 		var int_convert_x_ratio = int_screen_width / int_plane_x_size;
         var int_convert_y_ratio = int_screen_height / int_plane_y_size;
-		
-		var buffer = this.buffer;
+
 		var obj_calculated = this.obj_calculated;
 
 	    for(var int_y = int_y_start; int_y < int_screen_height; int_y++) {
+
+            var arr_row = new Array();
             
-            if(this.RENDER_DATA_URL) {
-                this.buffer[int_y] = '';
-            }   
-            
-			// we've processed a row, do we now need to take a break to give the browser UI a chance to update?
-			if(($time() - int_start_time) > 5000) {
-				console.info('Taking a break on row: ' + int_y);
+			// we've processed a row, do we now need to take a break to avoid
+            // script timeout errors?
+			if(($time() - int_start_time) > this.RENDER_TIMEOUT_BREAK) {
 				
-                if(this.RENDER_DIRECT) {
-                    this.obj_canvas_ctx.putImageData(buffer, 0, 0);
-                }
-                
+                // call ourselves again, passing the coordinates we're rendering
+                // and where we've got to (the row index)
 				this.render.delay(1, this, [obj_plane_coords, int_y]);
 				return;
 			}
 	
+            // calculate the colour data for this row
 			for(var int_x = 0; int_x < int_screen_width; int_x++) {
                 
 				var plane_x = obj_plane_coords.x[0] + (int_x / int_convert_x_ratio);
@@ -163,72 +145,23 @@ var JSF_Renderer = new Class({
                     z_y = 2 * z_x * z_y + plane_y;
                     z_x = int_z_x_squared - int_z_y_squared + plane_x;      
 				}
-                
-                // determine colour array to use
-                var arr_colour = this.arr_colours[i];
-		
-	            if(this.RENDER_DIRECT) {
-                    
-                    // plot the point at the correct index in the buffer
-                    var int_offset = (int_y * int_screen_width + int_x) * 4;
-
-                    buffer.data[int_offset] = arr_colour[0];
-                    buffer.data[int_offset + 1] = arr_colour[1];
-                    buffer.data[int_offset + 2] = arr_colour[2];
-                    
-                    // always full opacity
-                    buffer.data[int_offset + 3] = 255; 
-                }
-                else if(this.RENDER_DATA_URL) {
-               
-    				this.buffer[int_y] += String.fromCharCode(arr_colour[2], arr_colour[1], arr_colour[0]);
-                }
-                else {
-                    
-                    // rgb string is stored in the 4th index
-                    this.obj_canvas_ctx.fillStyle = arr_colour[3];
-                    this.obj_canvas_ctx.fillRect(int_x, int_y, 1, 1);
-                }
+        
+                // store this points colour for rendering at the end of the row
+                arr_row[int_x] = this.arr_colours[i];
 			}
+            
+            // render this row using the strategy assigned
+            this.obj_render_strategy.render(int_y, arr_row)
 		}
-		
-        // if we're directly manipulating the pixels we can copy over what we've
-        // calculated thus far to show the user the progress
-        if(this.RENDER_DIRECT) {
-            
-            this.obj_canvas_ctx.clearRect(0, 0, int_screen_width, int_screen_height);
-            this.obj_canvas_ctx.putImageData(buffer, 0, 0);
-        }
-        else if(this.RENDER_DATA_URL) {
-            
-            this._render_data_url();
-        }
-		
-		// we've completed the render - fire completion event, passing the time taken
-        if(this.RENDER_DATA_URL == false) {
-            this.fireEvent('onRenderComplete', ($time() - this.int_start_time));
-        }
+        
+        // we've calculated all points at this point so let the rendering strategy complete
+        this.obj_render_strategy.complete(int_screen_width, int_screen_height);
 	},
     
-    //http://neil.fraser.name/software/bmp_lib/bmp_lib.js
-    _render_data_url: function() {
+    _event_render_complete: function(int_duration) {
         
-         var str_bm_header = 'BMxxxx\0\0\0\0yyyy';
-         var str_bm_info = JSF_Util.multi_byte_encode(40,4) + JSF_Util.multi_byte_encode(300,4) + JSF_Util.multi_byte_encode(300,4) + '\x01\0' + JSF_Util.multi_byte_encode(24, 2) + '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0';
-         var str_data = this.buffer.reverse().join('');
-         var str_bm = str_bm_header + str_bm_info + str_data;
-        
-         str_bm = str_bm.replace(/yyyy/, JSF_Util.multi_byte_encode(str_bm_header.length + str_bm_info.length, 4));
-         str_bm = str_bm.replace(/xxxx/, JSF_Util.multi_byte_encode(str_data.length, 4));
-        
-         var obj_img = new Image();
-         obj_img.src = "data:image/bmp;base64," + JSF_Util.base64_encode(str_bm);
-         obj_img.onload = (function(obj_img){
-             this.obj_canvas_ctx.drawImage(obj_img, 0, 0);
-            
-             // we've completed the render - fire completion event, passing the time taken
-             this.fireEvent('onRenderComplete', ($time() - this.int_start_time));
-            
-         }).bind(this, obj_img);
-    }   
+        // notify listeners
+        this.fireEvent('onRenderComplete', int_duration);
+    }
+     
 });

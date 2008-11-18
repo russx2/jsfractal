@@ -34,22 +34,6 @@ var JSF_GUI = new Class({
         var obj_history = this.obj_history.get(int_history_idx);
         var elm_canvas = obj_history.elm_canvas;
         
-        /*
-        // the number of iterations for the zoom is dependent on how far we're zooming
-        // in (this means, with a constant "frame rate", the deeper the zoom, the longer
-        // the animation will take)
-        var int_zoom_area = (obj_selection_coords.x[1] - obj_selection_coords.x[0]) * (obj_selection_coords.y[1] - obj_selection_coords.y[0]);
-        var int_screen_area = int_screen_width * int_screen_height;
-        
-        // thus, number of iterations is linked to the ratio between the selection and the overall canvas width
-        //var flt_ratio = Math.sqrt(int_screen_area / int_zoom_area).round();
-        
-        //var flt_ratio = (300 / (obj_selection_coords.x[1] - obj_selection_coords.x[0])).round();
-        var flt_ratio = (obj_selection_coords.x[1] - obj_selection_coords.x[0]).round();
-
-        // 0 - 150
-        */
-       
         // calculate how many iterations the animation should take (the deeper the zoom the more
         // iterations in order to maintain consistent animation timing)
         var int_travel = (int_screen_width - (obj_selection_coords.x[1] - obj_selection_coords.x[0]));
