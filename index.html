@@ -50,24 +50,59 @@
         </ul>
     </div>
     
-    <!-- main fractal dom root -->
-    <div id="wrapper">
-        
-        <div id="header">
-            <h1>JS Fractal</h1>
+    <!-- header -->
+    <div id="header">
+        <h1>JS Fractal</h1>
+        <div id="options">
+            <div>
+                <select id="size" name="size">
+                    <option value="small">Tiny (fast!)</option>
+                    <option value="medium">Normal</option>
+                    <option value="large">Large (slow!)</option>
+                </select>
+                <label for="size">Size</label>
+            </div>
+            <div>
+                <select id="quality" name="quality">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                <label for="quality">Quality</label>
+            </div>
+            <div>
+                <select id="colours" name="colours">
+                    <option value="fire">Hell Fire</option>
+                </select>
+                <label for="colours">Colours</label>
+            </div>
         </div>
-        
-        <div id="workspace">
-            <canvas id="fractal" width="300" height="300"></canvas>
-            <div id="rendering"></div>
-            <!--<div id="options"></div>-->
+        <div id="rerender">
+            Changing these settings will redraw the current fractal.
         </div>
-        
-        <div id="timeline">
-            <div id="history"></div>
-            <div id="play"></div>
+    </div>
+    
+    <!-- workspace -->
+    <div id="workspacex">
+  
+    
+            
+        <!-- main fractal dom root -->
+        <div id="wrapper">
+            
+            <div id="workspace">
+                <canvas id="fractal" width="300" height="300"></canvas>
+                <div id="rendering"></div>
+                <!--<div id="options"></div>-->
+            </div>
+            
+            <div id="timeline">
+                <div id="history"></div>
+                <div id="play"></div>
+            </div>
+            
         </div>
-        
+    
     </div>
 </body>
 </html>

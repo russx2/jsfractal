@@ -45,8 +45,12 @@ var JSFractal = new Class({
         
         // listen to component events
 		obj_renderer.addEvent('onRenderComplete', this._event_render_complete.bind(this));
+        obj_renderer.addEvent('onRenderComplete', this.obj_gui.show_loading.bind(this.obj_gui, false));
+        obj_renderer.addEvent('onRenderStart', this.obj_gui.show_loading.bind(this.obj_gui, true));
+        obj_renderer.addEvent('onRenderPause', this.obj_gui.update_loading.bind(this.obj_gui));
 		obj_selector.addEvent('onSelection', this._event_selection.bind(this));
         obj_history.addEvent('onHistorySelect', this._event_go_history.bind(this));
+        
         
 		// render initial top level fractal
         obj_renderer.render(this.obj_plane_coords);
@@ -71,9 +75,6 @@ var JSFractal = new Class({
 	},
     
     _event_render_complete: function(int_duration) { 
-
-        // TODO: move to gui
-        $('rendering').setStyle('display', 'none');
   
         // add this newly rendered fractal to the history
         this.obj_history.add(this.obj_plane_coords, this.obj_canvas_coords);
@@ -96,9 +97,6 @@ var JSFractal = new Class({
 
 		// show the preview and render
 		this.obj_gui.zoom_preview(this.obj_history.get_active(), obj_selection_coords, this.render.bind(this, obj_selection_coords));
-
-        // TODO: move to gui
-        $('rendering').setStyle('display', 'block');
 	},
 
     _event_go_history: function(int_history_idx) {

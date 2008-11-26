@@ -10,7 +10,7 @@ var JSF_Detect = new Class({
         JSF_Detect.HAS_PIXEL_MANIPULATION = elm_canvas_ctx.getImageData ? true : false;
         
         // second best
-        JSF_Detect.HAS_DATA_URLS = true;
+        JSF_Detect.HAS_DATA_URLS = false;
     }
     
 });

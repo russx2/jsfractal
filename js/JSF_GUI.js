@@ -24,6 +24,14 @@ var JSF_GUI = new Class({
 		this.elm_canvas = $(str_canvas_id);
         this.obj_canvas_ctx = $(str_canvas_id).getContext('2d');
 	},
+    
+    show_loading: function(boo) {
+        $('rendering').setStyle('display', boo ? 'block' : 'none');
+    },
+    
+    update_loading: function(int_percentage) {
+        $('rendering').set('html', int_percentage + '% complete');
+    },
 	
 	zoom_preview: function(int_history_idx, obj_selection_coords, fun_callback) {
 		

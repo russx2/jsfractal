@@ -5,7 +5,11 @@
 }
 
 body {
+    font-family: helvetica,arial,sans-serif;
+    letter-spacing: -1px;
+    line-height: 1.4em;
     text-align: center;
+    background: #eae8c6 url(../img/layout/contentbg.jpg) 0 145px repeat-x;
 }
 
 body * {
@@ -22,12 +26,55 @@ body * {
 }
 
 #header {
-    background: #ddd;
+    position: relative;
+    width: 100%;
+    height: 144px;
+    background: #fff url(../img/layout/headbg.jpg) repeat-x;
+    border-bottom: 1px solid #3d5708;
 }
 
 #header h1 {
-    font-family: Helvetica, Arial, sans-serif;
-    font-size: 30px;
+    position: absolute;
+    top: 45px;
+    left: 60px;
+    width: 226px;
+    height: 56px;
+    background-image: url(../img/layout/logo.png);
+    text-indent: -9000px;
+}
+
+#header #options {
+    position: absolute;
+    top: 40px;
+    right: 220px;
+}
+
+#header #options > div {
+    margin-bottom: 0.2em;
+}
+
+#header #options select {
+    width: 15em;
+}
+
+#header #options label {
+    color: white;
+    font-weight: bold;
+    vertical-align: middle;
+    margin-left: 0.5em;
+}
+
+#header #rerender {
+    position: absolute;
+    top: 43px;
+    right: 40px;
+    width: 130px;
+    color: white;
+}
+
+
+#workspacex {
+    border-top: 1px solid white;
 }
 
 #workspace {
@@ -46,6 +93,7 @@ body * {
     height: 100px;
     left: 192px;
     top: 10px;
+    color: white;
     background: transparent url(../img/rendering.png) no-repeat;
 }
 

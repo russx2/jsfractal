@@ -7,7 +7,7 @@ var JSF_Renderer = new Class({
 	 * Configuration
 	 */
 	NUM_TESTS: 200,
-    RENDER_TIMEOUT_BREAK: 5000,     // ms
+    RENDER_TIMEOUT_BREAK: 5000, // ms
 
 	/*
 	 * Members
@@ -89,6 +89,9 @@ var JSF_Renderer = new Class({
 			
             // start at first row
             int_y_start = 0;
+            
+            // notify listeners
+            this.fireEvent('onRenderStart');
 
             // initialise the rendering for the rows
             this.obj_render_strategy.start(int_screen_width, int_screen_height);
@@ -115,9 +118,13 @@ var JSF_Renderer = new Class({
             // script timeout errors?
 			if(($time() - int_start_time) > this.RENDER_TIMEOUT_BREAK) {
 				
+                // notifier listeners of how much we've done
+                this.fireEvent('onRenderPause', Math.round((100 / int_screen_height) * int_y));
+                
                 // call ourselves again, passing the coordinates we're rendering
                 // and where we've got to (the row index)
 				this.render.delay(1, this, [obj_plane_coords, int_y]);
+                
 				return;
 			}
 	
