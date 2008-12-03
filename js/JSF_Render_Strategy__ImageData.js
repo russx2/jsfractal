@@ -14,7 +14,7 @@ var JSF_Render_Strategy__ImageData = new Class({
         
         this.parent(int_screen_width, int_screen_height);
 
-        this.obj_canvas_ctx.clearRect(0, 0, int_screen_width, int_screen_height);
+        //this.obj_canvas_ctx.clearRect(0, 0, int_screen_width, int_screen_height);
         
         this.obj_buffer = this.obj_canvas_ctx.getImageData(0, 0, int_screen_width, int_screen_height);
         

@@ -104,16 +104,20 @@ var JSF_Renderer = new Class({
 
         // initialise ourselves if this is the first call in the chain of these
         // render methods
-		if(!int_y_start) {
-            
-            // start at first row
-            int_y_start = 0;
-            
+		if(!$defined(int_y_start)) {
+
             // notify listeners
             this.fireEvent('onRenderStart');
-
+            
             // initialise the rendering for the rows
             this.obj_render_strategy.start(int_screen_width, int_screen_height);
+            
+            // begin rendering by supplying ourselves with the starting y
+            // parameter set (the delay is to allow GUI updates to process
+            // prior to beginning execution)
+            this.render.delay(50, this, [obj_plane_coords, 0]);
+
+            return;
 		}
         
         // we track our own time throughout this method to avoid triggering

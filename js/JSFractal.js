@@ -28,9 +28,9 @@ var JSFractal = new Class({
         },
         
         quality: {
-            low: { iterations: 10 },
-            medium: { iterations: 50 },
-            high: { iterations: 3000 }
+            low: { iterations: 50 },
+            medium: { iterations: 100 },
+            high: { iterations: 200 }
         }
     },
     
@@ -61,8 +61,8 @@ var JSFractal = new Class({
         
         // listen to component events
 		obj_renderer.addEvent('onRenderComplete', this._event_render_complete.bind(this));
-        obj_renderer.addEvent('onRenderComplete', this.obj_gui.show_loading.bind(this.obj_gui, false));
-        obj_renderer.addEvent('onRenderStart', this.obj_gui.show_loading.bind(this.obj_gui, true));
+        obj_renderer.addEvent('onRenderComplete', this.obj_gui.show_rendering.bind(this.obj_gui, false));
+        obj_renderer.addEvent('onRenderStart', this.obj_gui.show_rendering.bind(this.obj_gui, true));
         obj_renderer.addEvent('onRenderPause', this.obj_gui.update_loading.bind(this.obj_gui));
         
 		obj_selector.addEvent('onSelection', this._event_selection.bind(this));
@@ -114,11 +114,19 @@ var JSFractal = new Class({
         $(this.str_canvas_container_id).setStyles({width: int_width, height: int_height});
         
         // create new canvas element and insert into the container
-        (new Element('canvas', {
+        var elm_canvas = new Element('canvas', {
             width: int_width,
             height: int_height,
             id: this.str_canvas_id
-        })).inject(this.str_canvas_container_id);
+        });
+        
+        // default canvas to black
+        var elm_canvas_ctx = elm_canvas.getContext('2d');
+        elm_canvas_ctx.fillStyle = 'black';
+        elm_canvas_ctx.fillRect(0, 0, int_width, int_height);
+        
+        // add to the dom
+        elm_canvas.inject(this.str_canvas_container_id);
     },
 	
 	render: function(obj_selection_coords) {

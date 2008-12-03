@@ -7,7 +7,7 @@ var JSF_Detect = new Class({
         var elm_canvas_ctx = elm_canvas.getContext('2d');
         */
         // optimum
-        JSF_Detect.HAS_PIXEL_MANIPULATION = 1==2/*elm_canvas_ctx.getImageData*/ ? true : false;
+        JSF_Detect.HAS_PIXEL_MANIPULATION = 1==1/*elm_canvas_ctx.getImageData*/ ? true : false;
         
         // second best
         JSF_Detect.HAS_DATA_URLS = true;

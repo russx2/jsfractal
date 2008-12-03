@@ -16,12 +16,18 @@ var JSF_GUI = new Class({
     str_history_id: null,
     str_canvas_id: null,
  
-    // default settings form element IDs
+    // default settings
     options: {
+        
+        // settings form
         str_settings_form_id: 'jsf_settings',
         str_settings_size: { id: 'jsf_settings_size', initial: 'medium' },
         str_settings_quality: { id: 'jsf_settings_quality', initial: 'medium' },
-        str_settings_colours: { id: 'jsf_settings_colours', initial: 'fire' }
+        str_settings_colours: { id: 'jsf_settings_colours', initial: 'fire' },
+        
+        // rendering element
+        str_rendering_id: 'rendering',
+        str_rendering_status_id: 'rendering_status'
     },
  
 	
@@ -46,12 +52,15 @@ var JSF_GUI = new Class({
         $(this.options.str_settings_form_id).addEvent('submit', this._event_settings_change.bindWithEvent(this));
 	},
     
-    show_loading: function(boo) {
-        $('rendering').setStyle('display', boo ? 'block' : 'none');
+    show_rendering: function(boo) {
+        $(this.options.str_rendering_id).setStyle('display', boo ? 'block' : 'none');
+        
+        // clear the status percentage regardless of whether we're showing or hiding
+        $(this.options.str_rendering_status_id).set('html', '');
     },
     
     update_loading: function(int_percentage) {
-        $('rendering').set('html', int_percentage + '% complete');
+        $(this.options.str_rendering_status_id).set('html', int_percentage + '%');
     },
     
     _event_settings_change: function(obj_event) {

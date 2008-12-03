@@ -84,14 +84,39 @@ body * {
     position: relative;
 }
 
-#workspace #rendering {
+/* rendering message wrapper */
+#rendering {
     position: absolute;
-    width: 100px;
-    height: 100px;
-    left: 192px;
-    top: 10px;
-    color: white;
-    background: transparent url(../img/rendering.png) no-repeat;
+    width: 50%;
+    right: 0;
+    top: 5%;
+    border: 1px solid #444;
+    border-right: none;
+}
+
+/* rendering message background (separate div to achieve opacity) */
+#rendering_bg {
+    width: 100%;
+    height: 100%;
+    background: black;
+    opacity: 0.5;
+}
+
+/* rendering message text */
+#rendering_message {
+    position: absolute;
+    top: 0;
+    left: 5px;
+    color: #fff;
+    font-weight: bold;
+    text-align: left;
+    vertical-align: middle;
+}
+
+#rendering_status {
+    position: absolute;
+    bottom: 0;
+    text-align: center;
 }
 
 #timeline {
