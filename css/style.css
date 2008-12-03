@@ -55,6 +55,8 @@ body * {
 
 #header #options select {
     width: 15em;
+    font-size: 0.9em;
+    color: #333;
 }
 
 #header #options label {
@@ -80,11 +82,6 @@ body * {
 #workspace {
     margin: 20px 0;
     position: relative;
-}
-
-#workspace #fractal {
-    position: relative;
-    border: 2px solid #ddd;
 }
 
 #workspace #rendering {

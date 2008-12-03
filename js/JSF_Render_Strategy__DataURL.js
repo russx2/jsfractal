@@ -5,16 +5,16 @@ var JSF_Render_Strategy__DataURL = new Class({
     
     arr_buffer: null,
     
-    initialize: function(obj_canvas_ctx) {
+    initialize: function(str_canvas_id) {
 
-        this.parent(obj_canvas_ctx, 'DataURL');
+        this.parent(str_canvas_id, 'DataURL');
     },
     
     start: function(int_screen_width, int_screen_height) {
         
-        this.arr_buffer = new Array();
-        
         this.parent(int_screen_width, int_screen_height);
+        
+        this.arr_buffer = new Array();
     },
     
     render: function(int_row_idx, arr_data) {
@@ -40,7 +40,7 @@ var JSF_Render_Strategy__DataURL = new Class({
     _render_data_url: function() {
         
          var str_bm_header = 'BMxxxx\0\0\0\0yyyy';
-         var str_bm_info = JSF_Util.multi_byte_encode(40,4) + JSF_Util.multi_byte_encode(300,4) + JSF_Util.multi_byte_encode(300,4) + '\x01\0' + JSF_Util.multi_byte_encode(24, 2) + '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0';
+         var str_bm_info = JSF_Util.multi_byte_encode(40,4) + JSF_Util.multi_byte_encode(this.int_screen_width,4) + JSF_Util.multi_byte_encode(this.int_screen_height,4) + '\x01\0' + JSF_Util.multi_byte_encode(24, 2) + '\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0';
          var str_data = this.arr_buffer.reverse().join('');
          var str_bm = str_bm_header + str_bm_info + str_data;
         

@@ -3,9 +3,9 @@ var JSF_Render_Strategy__DrawRect = new Class({
 	
     Extends: JSF_Render_Strategy,
     
-    initialize: function(obj_canvas_ctx) {
+    initialize: function(str_canvas_id) {
 
-        this.parent(obj_canvas_ctx, 'DrawRect');
+        this.parent(str_canvas_id, 'DrawRect');
     },
 
     render: function(int_row_idx, arr_data) {

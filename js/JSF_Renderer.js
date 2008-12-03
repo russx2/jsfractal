@@ -6,15 +6,14 @@ var JSF_Renderer = new Class({
 	/*
 	 * Configuration
 	 */
-	NUM_TESTS: 200,
     RENDER_TIMEOUT_BREAK: 5000, // ms
 
 	/*
 	 * Members
 	 */
-	elm_canvas: null,
-	obj_canvas_ctx: null,
+	str_canvas_id: null,
     obj_render_strategy: null,
+    int_num_iterations: null,
 	
 	// drag selection element and drag object
 	elm_select: null,
@@ -23,33 +22,52 @@ var JSF_Renderer = new Class({
 	// stores a lookup of colours for non-Mandelbrot points (depending on escape speed)
 	arr_colours: null,
 
-	initialize: function(str_canvas_id) {
+	initialize: function(str_canvas_id, int_num_iterations) {
 	
-		// store canvas and drawing context reference
-		this.elm_canvas = $(str_canvas_id);
-		this.obj_canvas_ctx = this.elm_canvas.getContext('2d');
+		// store canvas ID
+		this.str_canvas_id = str_canvas_id;
+        
+        // set iteration limit
+        this.set_iterations(int_num_iterations);
+        
+        // calculate colour palette
+        this.build_colour_palette();
         
         // determine browser capabilities and choose the fastest rendering strategy
         if(JSF_Detect.HAS_PIXEL_MANIPULATION) {
-            this.obj_render_strategy = new JSF_Render_Strategy__ImageData(this.obj_canvas_ctx); 
+            this.obj_render_strategy = new JSF_Render_Strategy__ImageData(str_canvas_id); 
         }
         else if(JSF_Detect.HAS_DATA_URLS) {
-            this.obj_render_strategy = new JSF_Render_Strategy__DataURL(this.obj_canvas_ctx);
+            this.obj_render_strategy = new JSF_Render_Strategy__DataURL(str_canvas_id);
         }
         else {
-            this.obj_render_strategy = new JSF_Render_Strategy__DrawRect(this.obj_canvas_ctx);
+            this.obj_render_strategy = new JSF_Render_Strategy__DrawRect(str_canvas_id);
         }
         
+        // listen to completion events from the selected rendering strategy
         this.obj_render_strategy.addEvent('onComplete', this._event_render_complete.bind(this));
 		
-		// pre-calculate colour table for non-Mandelbrot points
-		this.arr_colours = new Array();
 		
-		for (var i = 0; i < this.NUM_TESTS; i++) {
+	},
+    
+    set_iterations: function(int_iterations) {
+        this.int_num_iterations = int_iterations;  
+    },
+    
+    /**
+     * Must be called after any updates to the iteration limit since this factors
+     * into the size of the palette.
+     */
+    build_colour_palette: function() {
+        
+        // pre-calculate colour table for non-Mandelbrot points
+        this.arr_colours = new Array();
+        
+        for (var i = 0; i < this.int_num_iterations; i++) {
 
             //this.arr_colours[i] = new Color('#f00').mix([0,255,0], (100/this.NUM_TESTS) * i).mix([0,0,255], 100 - ((100/this.NUM_TESTS) * i));
 
-            var int_mod = 765 * i / this.NUM_TESTS;
+            var int_mod = 765 * i / this.int_num_iterations;
             var arr_colour;
             
             if (int_mod > 510) {
@@ -65,7 +83,7 @@ var JSF_Renderer = new Class({
             }
             
             // force last index to black (represents non-escaping orbits - i.e. part of the set)
-            if(i == this.NUM_TESTS -1) {
+            if(i == this.int_num_iterations -1) {
                 arr_colour = [0, 0, 0];
             }
             
@@ -74,19 +92,20 @@ var JSF_Renderer = new Class({
             // [2] Blue component
             // [3] RGB(r,g,b) string (used for browsers without canvas getImageData method)
             this.arr_colours[i] = arr_colour.concat(['rgb(' + arr_colour[0] + ',' + arr_colour[1] + ',' + arr_colour[2] + ')']);
-        }
-	},
+        }  
+    },
 
 	render: function(obj_plane_coords, int_y_start) {
 
-        // cache canvas size
-        var int_screen_width = this.elm_canvas.getProperty('width');
-        var int_screen_height = this.elm_canvas.getProperty('height');
+        // retrieve canvas size
+        var elm_canvas = $(this.str_canvas_id);
+        var int_screen_width = elm_canvas.getProperty('width');
+        var int_screen_height = elm_canvas.getProperty('height');
 
         // initialise ourselves if this is the first call in the chain of these
         // render methods
 		if(!int_y_start) {
-			
+            
             // start at first row
             int_y_start = 0;
             
@@ -96,7 +115,7 @@ var JSF_Renderer = new Class({
             // initialise the rendering for the rows
             this.obj_render_strategy.start(int_screen_width, int_screen_height);
 		}
-	
+        
         // we track our own time throughout this method to avoid triggering
         // script timeout warnings (we give the processor when the time reaches
         // a certain point)
@@ -138,7 +157,7 @@ var JSF_Renderer = new Class({
 				var z_x = plane_x;
 				var z_y = plane_y;
 				
-				for(var i = 0; i < this.NUM_TESTS - 1; i++) {
+				for(var i = 0; i < this.int_num_iterations - 1; i++) {
 				
 					var int_z_x_squared = z_x * z_x;
 					var int_z_y_squared = z_y * z_y;

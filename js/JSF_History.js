@@ -8,16 +8,12 @@ var JSF_History = new Class({
     
     str_history_id: null,
     str_canvas_id: null,
-    elm_canvas: null,
-    obj_canvas_ctx: null,
     
     initialize: function(str_canvas_id, str_history_id) {
     
         // store canvas reference
         this.str_canvas_id = str_canvas_id;
-        this.elm_canvas = $(str_canvas_id);
-        this.obj_canvas_cts = $(str_canvas_id).getContext('2d');
-        
+
         // store history id
         this.str_history_id = str_history_id;
         
@@ -33,22 +29,24 @@ var JSF_History = new Class({
     
     add: function(obj_plane_coords, obj_canvas_coords) {
     
-        var int_screen_width = this.elm_canvas.getProperty('width');
-        var int_screen_height = this.elm_canvas.getProperty('height');   
+        var elm_canvas = $(this.str_canvas_id);
+        
+        var int_screen_width = elm_canvas.getProperty('width');
+        var int_screen_height = elm_canvas.getProperty('height');   
         
         // store current rendering in the history
         var int_history_idx = this.arr_history.length;
         
         // copy the current rendering to store in the history
-        var elm_canvas = new Element('canvas', {
+        var elm_canvas_history = new Element('canvas', {
             width: int_screen_width,
             height: int_screen_height 
         });
         
-        elm_canvas.getContext('2d').drawImage(this.elm_canvas, 0, 0);
+        elm_canvas_history.getContext('2d').drawImage(elm_canvas, 0, 0);
         
         this.arr_history[int_history_idx] = {
-            elm_canvas: elm_canvas,
+            elm_canvas: elm_canvas_history,
             obj_plane_coords: obj_plane_coords,
             obj_selection_coords: obj_canvas_coords
         };
@@ -60,7 +58,7 @@ var JSF_History = new Class({
         })).inject(this.str_history_id, 'bottom');
         
         // draw current state onto the thumbnail
-        elm_thumb.getContext('2d').drawImage(this.elm_canvas, 0, 0, int_screen_width, int_screen_height, 0, 0, 50, 50);
+        elm_thumb.getContext('2d').drawImage(elm_canvas, 0, 0, int_screen_width, int_screen_height, 0, 0, 50, 50);
 
         // store history ID into the thumbnail (for performance reasons)
         elm_thumb.store('idx', int_history_idx);

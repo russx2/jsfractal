@@ -21,7 +21,7 @@
         window.addEvent('domready', function() {
 
             // compatibility check
-            if (!$defined($('fractal').getContext)) {
+            if (1!=1 && !$defined($('fractal').getContext)) {
             
                 // show non-compatible message
                 $('wrapper').setStyle('display', 'none');
@@ -29,7 +29,7 @@
             }
             else {
              
-                new JSFractal('fractal', 'history');
+                JSF = new JSFractal('fractal_container', 'fractal', 'history');
             }
         });
 
@@ -37,7 +37,6 @@
     <link type="text/css" rel="stylesheet" href="css/style.css"></link>
 </head>
 <body>
-    
     <!-- for browsers without canvas -->
     <div id="non-compatible">
         <h1>Sorry!</h1>
@@ -54,28 +53,34 @@
     <div id="header">
         <h1>JS Fractal</h1>
         <div id="options">
-            <div>
-                <select id="size" name="size">
-                    <option value="small">Tiny (fast!)</option>
-                    <option value="medium">Normal</option>
-                    <option value="large">Large (slow!)</option>
-                </select>
-                <label for="size">Size</label>
-            </div>
-            <div>
-                <select id="quality" name="quality">
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                </select>
-                <label for="quality">Quality</label>
-            </div>
-            <div>
-                <select id="colours" name="colours">
-                    <option value="fire">Hell Fire</option>
-                </select>
-                <label for="colours">Colours</label>
-            </div>
+            <form id="jsf_settings">
+                <div>
+                    <select id="jsf_settings_size" name="size">
+                        <option value="small">Tiny (fast!)</option>
+                        <option value="medium" selected="selected">Normal</option>
+                        <option value="large">Large (slow!)</option>
+                    </select>
+                    <label for="jsf_settings_size">Size</label>
+                </div>
+                <div>
+                    <select id="jsf_settings_quality" name="quality">
+                        <option value="low">Low</option>
+                        <option value="medium" selected="selected">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                    <label for="jsf_settings_quality">Quality</label>
+                </div>
+                <div>
+                    <select id="jsf_settings_colours" name="colours">
+                        <option value="fire" selected="selected">Hell Fire</option>
+                    </select>
+                    <label for="jsf_settings_colours">Colours</label>
+                </div>
+                <div>
+                    <input type="submit" name="submit_change" value="Update" />
+                    <input type="submit" name="submit_new" value="New" />
+                </div>
+            </form>
         </div>
         <div id="rerender">
             Changing these settings will redraw the current fractal.
@@ -91,7 +96,7 @@
         <div id="wrapper">
             
             <div id="workspace">
-                <canvas id="fractal" width="300" height="300"></canvas>
+                <div id="fractal_container" style="position: relative"></div>
                 <div id="rendering"></div>
                 <!--<div id="options"></div>-->
             </div>

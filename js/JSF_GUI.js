@@ -1,7 +1,13 @@
 
+/**
+ * Events fired:
+ * 
+ *     * onSettingsChange(obj_settings)
+ *       Fired when the user changes the settings form
+ */
 var JSF_GUI = new Class({
 	
-    Implements: [Events, Chain],
+    Implements: [Options, Events, Chain],
     
     // reference to history object
 	obj_history: null,
@@ -9,20 +15,35 @@ var JSF_GUI = new Class({
     // caching of necessary properties
     str_history_id: null,
     str_canvas_id: null,
-    
-	elm_canvas: null,
-    obj_canvas_ctx: null,
+ 
+    // default settings form element IDs
+    options: {
+        str_settings_form_id: 'jsf_settings',
+        str_settings_size: { id: 'jsf_settings_size', initial: 'medium' },
+        str_settings_quality: { id: 'jsf_settings_quality', initial: 'medium' },
+        str_settings_colours: { id: 'jsf_settings_colours', initial: 'fire' }
+    },
+ 
 	
-	
-	initialize: function(obj_history, str_canvas_id, str_history_id) {
+	initialize: function(obj_history, str_canvas_id, str_history_id, obj_options) {
 		
+        // save for internal use
 		this.obj_history = obj_history;
         this.str_history_id = str_history_id;
-        
-        // save a reference to the canvas and drawing context
         this.str_canvas_id = str_canvas_id;
-		this.elm_canvas = $(str_canvas_id);
-        this.obj_canvas_ctx = $(str_canvas_id).getContext('2d');
+        
+        // override any default settings options
+        if(obj_options) {
+            this.setOptions(obj_options);
+        }
+        
+        // set defaults in settings form
+        $(this.options.str_settings_size.id).getElement('option[value=' + this.options.str_settings_size.initial +']').set('selected', true);
+        $(this.options.str_settings_quality.id).getElement('option[value=' + this.options.str_settings_quality.initial +']').set('selected', true);
+        $(this.options.str_settings_colours.id).getElement('option[value=' + this.options.str_settings_colours.initial +']').set('selected', true);
+        
+        // hook ourselves into the fractal settings form
+        $(this.options.str_settings_form_id).addEvent('submit', this._event_settings_change.bindWithEvent(this));
 	},
     
     show_loading: function(boo) {
@@ -32,11 +53,27 @@ var JSF_GUI = new Class({
     update_loading: function(int_percentage) {
         $('rendering').set('html', int_percentage + '% complete');
     },
+    
+    _event_settings_change: function(obj_event) {
+        
+        // prevent the event from propogating
+        obj_event.stop();
+        
+        // extract settings
+        var obj_settings = {
+            size: $(this.options.str_settings_size.id).get('value'),
+            quality: $(this.options.str_settings_quality.id).get('value'),
+            colours: $(this.options.str_settings_colours.id).get('value')
+        };
+        
+        this.fireEvent('onSettingsChange', obj_settings);
+    },
 	
 	zoom_preview: function(int_history_idx, obj_selection_coords, fun_callback) {
 		
-        var int_screen_width = this.elm_canvas.getProperty('width');
-        var int_screen_height = this.elm_canvas.getProperty('height');
+        var elm_canvas = $(this.str_canvas_id);
+        var int_screen_width = elm_canvas.getProperty('width');
+        var int_screen_height = elm_canvas.getProperty('height');
         
         // retrieve the image and coordinates we're zooming into from the history
         var obj_history = this.obj_history.get(int_history_idx);
@@ -45,7 +82,7 @@ var JSF_GUI = new Class({
         // calculate how many iterations the animation should take (the deeper the zoom the more
         // iterations in order to maintain consistent animation timing)
         var int_travel = (int_screen_width - (obj_selection_coords.x[1] - obj_selection_coords.x[0]));
-        var int_iterations = (int_travel / 5).round();
+        var int_iterations = (int_travel / (int_screen_width / 40)).round();
         
         // pre-calculate some necessary values for the zoom animation method
         var obj_zoom_values = {
@@ -66,13 +103,13 @@ var JSF_GUI = new Class({
             // number of frames required for the zoom animation
             iterations: int_iterations
         };
-        
+
         // execute the zoom
-        this._zoom_preview(elm_canvas, obj_zoom_values, fun_callback, 0);
+        this._zoom_preview(elm_canvas, $(this.str_canvas_id).getContext('2d'), obj_zoom_values, fun_callback, 0);
 	},
     
-    _zoom_preview: function(elm_canvas, obj_zoom_values, fun_callback, i) {
-
+    _zoom_preview: function(elm_canvas, obj_canvas_ctx, obj_zoom_values, fun_callback, i) {
+        
         var int_screen_width = obj_zoom_values.screen_width;
         var int_screen_height = obj_zoom_values.screen_height;
         var int_iterations = obj_zoom_values.iterations;
@@ -88,9 +125,9 @@ var JSF_GUI = new Class({
         var flt_x1 = int_screen_width - ((obj_zoom_values.right / int_iterations) * i);
         var flt_y1 = int_screen_height - ((obj_zoom_values.bottom / int_iterations) * i);
 
-        this.obj_canvas_ctx.drawImage(elm_canvas, flt_x0, flt_y0, flt_x1 - flt_x0, flt_y1 - flt_y0, 0, 0, int_screen_width, int_screen_height);
+        obj_canvas_ctx.drawImage(elm_canvas, flt_x0, flt_y0, flt_x1 - flt_x0, flt_y1 - flt_y0, 0, 0, int_screen_width, int_screen_height);
     
-        this._zoom_preview.delay(5, this, [elm_canvas, obj_zoom_values, fun_callback, i + 1]);
+        this._zoom_preview.delay(5, this, [elm_canvas, obj_canvas_ctx, obj_zoom_values, fun_callback, i + 1]);
     },
     
     __play: function(fun_callback) {

@@ -22,7 +22,7 @@ var JSF_Selector = new Class({
         
 		// create selection element and add to the dom
 		this.elm_selection = new Element('div');
-		this.elm_selection.inject($(str_container_id), 'after');
+		this.elm_selection.inject($(str_container_id), 'top');
         
         // calculate the border offset of the container
         this.int_container_border += $(str_container_id).getStyle('border-left').toInt();
@@ -50,23 +50,29 @@ var JSF_Selector = new Class({
 	
 	reset: function() {
 
-		var obj_container_coords = $(this.str_container_id).getCoordinates();
-
         // hide the selection area from view but allow it to still be
         // the top clickable layer
 		this.elm_selection.setStyles({
+            
 			position: 'absolute',
             
-            // top and left styles skip the padding, border, etc. offset
-			top: this.int_container_border,
-			left: this.int_container_border,
+            // stretch over entire canvas area
+			top: 0,
+			left: 0,
+            bottom: 0,
+            right: 0,
             
-            // width and height values deduct the padding, border, etc. values
-			width: obj_container_coords.width - (2 * this.int_container_border),
-			height: obj_container_coords.height - (2 * this.int_container_border),
-            
+            // width and height should be auto whilst we're waiting for the
+            // click to activate
+            width: 'auto',
+            height: 'auto',
+
+            // hide selection area from view
             border: 0,
-            background: 'transparent'
+            background: 'transparent',
+            
+            // should be the top most element within the fracal container
+            zIndex: 999
 		});
 	},
 	
@@ -76,7 +82,7 @@ var JSF_Selector = new Class({
 
         // calculate where the click is relative to the container
     	var int_x = obj_event.client.x - obj_container_coords.left;
-    	var int_y = obj_event.client.y - obj_container_coords.top + 8;
+    	var int_y = obj_event.client.y - obj_container_coords.top + 8 + $(window).getScroll().y;
         
     	// move the selection element to where the user clicked
     	this.elm_selection.setStyles({
@@ -84,6 +90,8 @@ var JSF_Selector = new Class({
     		top: int_y,
     		width: 0,
     		height: 0,
+            right: 'auto',
+            bottom: 'auto',
     		border: '1px dashed black',
             background: 'white',
             opacity: 0.3

@@ -5,18 +5,20 @@ var JSF_Render_Strategy__ImageData = new Class({
     
     obj_buffer: null,
     
-    initialize: function(obj_canvas_ctx) {
+    initialize: function(str_canvas_id) {
 
-        this.parent(obj_canvas_ctx, 'ImageData');
+        this.parent(str_canvas_id, 'ImageData');
     },
     
     start: function(int_screen_width, int_screen_height) {
+        
+        this.parent(int_screen_width, int_screen_height);
 
         this.obj_canvas_ctx.clearRect(0, 0, int_screen_width, int_screen_height);
         
         this.obj_buffer = this.obj_canvas_ctx.getImageData(0, 0, int_screen_width, int_screen_height);
         
-        this.parent(int_screen_width, int_screen_height);
+        
     },
     
     render: function(int_row_idx, arr_data) {
