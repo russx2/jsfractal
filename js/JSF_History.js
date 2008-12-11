@@ -112,6 +112,10 @@ var JSF_History = new Class({
         }
     },
     
+    delete_last: function() {
+        
+    },
+    
     _get_elements: function() {
     
         return $(this.str_history_id).getElements('canvas');

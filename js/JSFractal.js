@@ -28,9 +28,10 @@ var JSFractal = new Class({
         },
         
         quality: {
-            low: { iterations: 50 },
-            medium: { iterations: 100 },
-            high: { iterations: 200 }
+            low: { iterations: 100 },
+            medium: { iterations: 200 },
+            high: { iterations: 500 },
+            ultra: { iterations: 1000 }
         }
     },
     
@@ -67,13 +68,13 @@ var JSFractal = new Class({
         
 		obj_selector.addEvent('onSelection', this._event_selection.bind(this));
         obj_history.addEvent('onHistorySelect', this._event_go_history.bind(this));
-        obj_gui.addEvent('onSettingsChange', this._reset.bind(this));
+        obj_gui.addEvent('onSettingsChange', this._change_settings.bind(this));
         
         // set initial default plane coordinates
         this.obj_plane_coords = this.obj_settings.plane_coords_initial;
         
 		// render initial top level fractal (with default settings)
-        this._reset({
+        this._change_settings({
             size: 'medium',
             quality: 'medium',
             colours: 'fire'
@@ -83,10 +84,10 @@ var JSFractal = new Class({
         $('play').addEvent('click', this.__play.bind(this));
 	},
     
-    _reset: function(obj_settings) {
+    _change_settings: function(obj_settings) {
         
-        // clear the history
-        this.obj_history.clear();
+        // remove last item from history (we're replacing it)
+        this.obj_history.delete_last();
         
         // extract parameters from lookup
         var obj_params_quality = this.obj_settings.quality[obj_settings.quality];
@@ -136,6 +137,7 @@ var JSFractal = new Class({
         // calculate plane coords from the (canvas based) selection coords
         var obj_plane_coords = JSF_Util.canvas_coords_to_fractal(this.str_canvas_id, this.obj_plane_coords, obj_selection_coords);
 
+window.location.hash = JSF_Util.base64_encode(obj_plane_coords.x[0]) + '|' + JSF_Util.base64_encode(obj_plane_coords.y[0]) + '|' + JSF_Util.base64_encode(obj_plane_coords.x[1]) + '|' + JSF_Util.base64_encode(obj_plane_coords.y[1]);
 		// store new coordinates
 		this.obj_plane_coords = obj_plane_coords;
         this.obj_canvas_coords = obj_selection_coords;
@@ -180,8 +182,11 @@ var JSFractal = new Class({
         // flag the item as active
         this.obj_history.set_active(int_history_idx);
 
+        var int_width = $(this.str_canvas_id).getProperty('width');
+        var int_height = $(this.str_canvas_id).getProperty('height');
+
         // draw history item to the canvas
-        $(this.str_canvas_id).getContext('2d').drawImage(obj_history.elm_canvas, 0, 0);
+        $(this.str_canvas_id).getContext('2d').drawImage(obj_history.elm_canvas, 0, 0, int_width, int_height);
         
         // update current coordinates
         this.obj_plane_coords = obj_history.obj_plane_coords;

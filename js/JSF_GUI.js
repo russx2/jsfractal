@@ -86,7 +86,11 @@ var JSF_GUI = new Class({
         
         // retrieve the image and coordinates we're zooming into from the history
         var obj_history = this.obj_history.get(int_history_idx);
-        var elm_canvas = obj_history.elm_canvas;
+        var elm_canvas_history = obj_history.elm_canvas;
+        
+        // history canvas may not be the same size as the current "screen" size
+        var int_history_width = elm_canvas_history.width;
+        var int_history_height = elm_canvas_history.height;
         
         // calculate how many iterations the animation should take (the deeper the zoom the more
         // iterations in order to maintain consistent animation timing)
@@ -98,13 +102,17 @@ var JSF_GUI = new Class({
             
             // calculate the bounding rectangle for the area we're zooming into
             left: obj_selection_coords.x[0],
-            right: int_screen_width - obj_selection_coords.x[1],
+            right: int_history_width - obj_selection_coords.x[1],
             top: obj_selection_coords.y[0],
-            bottom: int_screen_height - obj_selection_coords.y[1],
+            bottom: int_history_height - obj_selection_coords.y[1],
             
-            // canvas dimensions
+            // target canvas dimensions
             screen_width: int_screen_width,
             screen_height: int_screen_height,
+            
+            // history canvas dimensions
+            history_width: int_history_width,
+            history_height: int_history_height,
             
             // selection coordinates
             selection: obj_selection_coords,
@@ -114,13 +122,17 @@ var JSF_GUI = new Class({
         };
 
         // execute the zoom
-        this._zoom_preview(elm_canvas, $(this.str_canvas_id).getContext('2d'), obj_zoom_values, fun_callback, 0);
+        this._zoom_preview(elm_canvas_history, $(this.str_canvas_id).getContext('2d'), obj_zoom_values, fun_callback, 0);
 	},
     
     _zoom_preview: function(elm_canvas, obj_canvas_ctx, obj_zoom_values, fun_callback, i) {
         
+        var int_history_width = obj_zoom_values.history_width;
+        var int_history_height = obj_zoom_values.history_height;
+        
         var int_screen_width = obj_zoom_values.screen_width;
         var int_screen_height = obj_zoom_values.screen_height;
+        
         var int_iterations = obj_zoom_values.iterations;
         
         if(i == int_iterations) {
@@ -131,8 +143,8 @@ var JSF_GUI = new Class({
 
         var flt_x0 = (i * (obj_zoom_values.left / int_iterations));
         var flt_y0 = (i * (obj_zoom_values.top / int_iterations));
-        var flt_x1 = int_screen_width - ((obj_zoom_values.right / int_iterations) * i);
-        var flt_y1 = int_screen_height - ((obj_zoom_values.bottom / int_iterations) * i);
+        var flt_x1 = int_history_width - ((obj_zoom_values.right / int_iterations) * i);
+        var flt_y1 = int_history_height - ((obj_zoom_values.bottom / int_iterations) * i);
 
         obj_canvas_ctx.drawImage(elm_canvas, flt_x0, flt_y0, flt_x1 - flt_x0, flt_y1 - flt_y0, 0, 0, int_screen_width, int_screen_height);
     
@@ -142,6 +154,7 @@ var JSF_GUI = new Class({
     __play: function(fun_callback) {
         
         var fun_callchain_bind = this.callChain.bind(this);
+        
         var fun_active_history = function(i) {
             this.obj_history.set_active(i);
             this.callChain();

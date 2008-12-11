@@ -67,6 +67,7 @@
                         <option value="low">Low</option>
                         <option value="medium" selected="selected">Medium</option>
                         <option value="high">High</option>
+                        <option value="ultra">Ultra!</option>
                     </select>
                     <label for="jsf_settings_quality">Quality</label>
                 </div>
@@ -87,34 +88,57 @@
         </div>
     </div>
     
-    <!-- workspace -->
-    <div id="workspacex">
-  
-    
-            
-        <!-- main fractal dom root -->
-        <div id="wrapper">
-            
-            <div id="workspace">
-                <div id="fractal_container" style="position: relative">
-                    <div id="rendering">
-                        <div id="rendering_bg">&nbsp;</div>
-                        <div id="rendering_message">
-                            Rendering ... <span id="rendering_status"></span>
-                        </div>
+    <!-- main fractal dom root -->
+    <div id="workspace_wrapper">
+        
+        <div id="workspace">
+            <div id="fractal_container" style="position: relative">
+                <div id="rendering">
+                    <div id="rendering_bg">&nbsp;</div>
+                    <div id="rendering_message">
+                        Drawing ... <span id="rendering_status"></span>
                     </div>
                 </div>
-                
-                <!--<div id="options"></div>-->
             </div>
-            
+    
             <div id="timeline">
                 <div id="history"></div>
                 <div id="play"></div>
             </div>
-            
         </div>
+        
+    </div>
     
+    <!-- footer -->
+    <div id="footer">
+        <div id="help">
+            <div class="help about">
+                <h2>What is this?</h2>
+                <p>A fractal is generally "a rough or fragmented geometric shape that can be split into parts, each of which is (at least approximately) a reduced-size copy of the whole".</p>
+                <p>Todo: rewrite the above ;-)</p>
+            </div>
+            <div class="help zoom">
+                <h2>Zoom!</h2>
+                <p>Use the mouse to drag-select an area of the fractal to zoom in to.</p>
+                <p>This will enlarge the area you have selected and draw it in higher detail.</p>
+                <p>There is no theoretical limit to how deep you can zoom.</p>
+            </div>
+            <div class="help timeline">
+                <h2>Timeline</h2>
+                <p>As you explore deeper in to the fractal, each previous location is added to the <strong>timeline</strong>.</p>
+                <p>You can flip back to any previous state by clicking on the corresponding icon. If you wish, you may head off in a new direction from this previous point. Clicking <strong>play</strong> will animate the whole sequence.</p>
+            </div>
+            <div class="help bookmark">
+                <h2>Bookmark</h2>
+                <p>You can save any fractal to come back to later simply by bookmarking the page.</p>
+                <p>This URL can be shared as it will always re-render the current fractal.</p>
+            </div>
+            <div class="help settings">
+                <h2>Settings</h2>
+                <p>Depending on the speed of your computer and browser, you may wish to increase the quality and size settings of the fractal. You can also change the colour scheme.</p>
+                <p>Click the update button to redraw the current fractal with the new settings.</p>
+            </div>
+        </div>
     </div>
 </body>
 </html>
