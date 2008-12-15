@@ -65,7 +65,7 @@ var JSF_History = new Class({
         
         // assign click handler so we can restore the view
         elm_thumb.addEvent('click', this._event_click_history.bindWithEvent(this));
-        console.info(int_history_idx);
+
         this.set_active(int_history_idx);
     },
     

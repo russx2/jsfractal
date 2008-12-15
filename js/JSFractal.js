@@ -22,7 +22,7 @@ var JSFractal = new Class({
         },
         
         size: {
-            small: { width: 150, height: 150 },
+            small: { width: 152, height: 152 },
             medium: { width: 300, height: 300 },
             large: { width: 500, height: 500 }
         },
