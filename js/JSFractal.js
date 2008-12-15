@@ -92,7 +92,7 @@ var JSFractal = new Class({
     _change_settings: function(obj_settings) {
         
         // remove last item from history (we're replacing it)
-        this.obj_history.delete_last();
+        this.obj_history.delete_from_active();
         
         // extract parameters from lookup
         var obj_params_quality = this.obj_settings.quality[obj_settings.quality];
@@ -142,8 +142,9 @@ var JSFractal = new Class({
         // calculate plane coords from the (canvas based) selection coords
         var obj_plane_coords = JSF_Util.canvas_coords_to_fractal(this.str_canvas_id, this.obj_plane_coords, obj_selection_coords);
 
-window.location.hash = JSF_Util.base64_encode(obj_plane_coords.x[0]) + '|' + JSF_Util.base64_encode(obj_plane_coords.y[0]) + '|' + JSF_Util.base64_encode(obj_plane_coords.x[1]) + '|' + JSF_Util.base64_encode(obj_plane_coords.y[1]);
-		// store new coordinates
+//window.location.hash = JSF_Util.base64_encode(obj_plane_coords.x[0]) + '|' + JSF_Util.base64_encode(obj_plane_coords.y[0]) + '|' + JSF_Util.base64_encode(obj_plane_coords.x[1]) + '|' + JSF_Util.base64_encode(obj_plane_coords.y[1]);
+	
+    	// store new coordinates
 		this.obj_plane_coords = obj_plane_coords;
         this.obj_canvas_coords = obj_selection_coords;
 
@@ -156,9 +157,12 @@ window.location.hash = JSF_Util.base64_encode(obj_plane_coords.x[0]) + '|' + JSF
         // add this newly rendered fractal to the history
         this.obj_history.add(this.obj_plane_coords, this.obj_canvas_coords);
         
+        // remove event locks
         this._lock(false);
  
+        // show rendering time
         console.info('Render complete in: ' + int_duration + 'ms');
+        this.obj_gui.show_render_time(int_duration);
     },
 	
 	_event_selection: function(obj_selection_coords) {

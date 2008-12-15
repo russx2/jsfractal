@@ -65,7 +65,7 @@ var JSF_History = new Class({
         
         // assign click handler so we can restore the view
         elm_thumb.addEvent('click', this._event_click_history.bindWithEvent(this));
-        
+        console.info(int_history_idx);
         this.set_active(int_history_idx);
     },
     
@@ -100,7 +100,7 @@ var JSF_History = new Class({
     },
     
     delete_after_active: function() {
-
+        
         // remove history data after the active selection
         this.arr_history.splice(this.int_active_idx + 1, this.arr_history.length - 1 - this.int_active_idx);
         
@@ -110,6 +110,21 @@ var JSF_History = new Class({
         for(var i = this.int_active_idx + 1, ilen = arr_history.length; i < ilen; i++) {
             arr_history[i].dispose();
         }
+    },
+    
+    delete_from_active: function() {
+        
+        // remove history data after the active selection
+        this.arr_history.splice(this.int_active_idx, this.arr_history.length - 1 - this.int_active_idx + 1);
+        
+        // update the gui
+        var arr_history = this._get_elements();
+        
+        for(var i = this.int_active_idx, ilen = arr_history.length; i < ilen; i++) {
+            arr_history[i].dispose();
+        }
+        
+        this.int_active_idx--;
     },
     
     delete_last: function() {

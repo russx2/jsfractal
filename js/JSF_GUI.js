@@ -32,7 +32,8 @@ var JSF_GUI = new Class({
         
         // help text/areas
         str_help_link_id: 'help_link',
-        str_help_area_id: 'footer'
+        str_help_area_id: 'footer',
+        str_render_time_id: 'render_time'
     },
  
 	
@@ -91,6 +92,10 @@ var JSF_GUI = new Class({
     scroll_to_help: function() {
         
         (new Fx.Scroll(document.window)).toElement(this.options.str_help_area_id);
+    },
+    
+    show_render_time: function(str_time) {
+        $(this.options.str_render_time_id).set('html', str_time);  
     },
 	
 	zoom_preview: function(int_history_idx, obj_selection_coords, fun_callback) {
