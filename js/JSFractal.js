@@ -46,9 +46,14 @@ var JSFractal = new Class({
 		
         this.str_canvas_container_id = str_canvas_container_id;
 		this.str_canvas_id = str_canvas_id;
+        
+        if(!console) {
+            console = {};
+            console.info = function(){};
+        }
 
 		// initialise the components
-        var obj_detect = new JSF_Detect(str_canvas_id);
+        var obj_detect = new JSF_Detect();
 		var obj_renderer = new JSF_Renderer(str_canvas_id, this.obj_settings.quality.medium.iterations);
         var obj_selector = new JSF_Selector(str_canvas_container_id);
         var obj_history = new JSF_History(str_canvas_id, str_history_id);

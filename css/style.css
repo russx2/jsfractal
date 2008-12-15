@@ -12,20 +12,8 @@ body {
     background: #eae8c6 url(../img/layout/contentbg.jpg) 0 145px repeat-x; /* top fade from header */
 }
 
-#workspace_wrapper {
-    width: 100%;
-    overflow: hidden;
-    border-top: 1px solid white;
-    background: #eae8c6 url(../img/layout/contentbg_footer.jpg) left bottom repeat-x;
-    padding-bottom: 56px;
-    border-bottom: 1px solid #fff;
-}
-
-#fractal_container {
-    margin: 2em auto;
-    padding: 3px;
-    border: 1px solid #fff;
-    background: #666;
+#non-compatible {
+    margin: 1em;
 }
 
 #non-compatible {
@@ -50,9 +38,22 @@ body {
     text-indent: -9000px;
 }
 
+#header p {
+    position: absolute;
+    top: 105px;
+    left: 65px;
+    color: #222;
+    text-decoration: underline;
+}
+
+#header p:hover {
+    color: #000;
+    cursor: pointer;
+}
+
 #header #options {
     position: absolute;
-    top: 40px;
+    top: 30px;
     right: 220px;
 }
 
@@ -73,54 +74,29 @@ body {
     margin-left: 0.5em;
 }
 
+#header #jsf_settings_submit_update {
+    margin: 8px 0 0 -3px;
+    width: 79px;
+    height: 22px;
+    background: transparent url(../img/buttons/update.png) no-repeat;
+}
+
+#header #jsf_settings_submit_update:hover {
+    cursor: pointer;
+    background-position: 0 -22px;
+}
+
 #header #rerender {
     position: absolute;
-    top: 43px;
+    top: 30px;
     right: 40px;
     width: 130px;
     color: white;
 }
 
-#footer {
-    position: relative;
-    width: 100%;
-    background: #6d675e url(../img/layout/footbg.jpg) repeat-x;   
-}
-
-#footer #help {
-    width: 100%;
-    overflow: hidden;
-}
-
-#footer .help {
-    float: left;
-    width: 16%;
-    padding: 2% 2% 2% 2%;
-}
-
-#footer .help h2 {
-    color: #fff;
-    border-bottom: 1px solid #222;
-    padding-bottom: 0.3em;
-    margin-bottom: 0.3em;
-    padding-left: 30px;
-    background-repeat: no-repeat;
-}
-
-#footer .help.about h2 { background-image: url(../img/icons/about.png); }
-#footer .help.zoom h2 { background-image: url(../img/icons/zoom.png); }
-#footer .help.timeline h2 { background-image: url(../img/icons/timeline.png); }
-#footer .help.bookmark h2 { background-image: url(../img/icons/bookmark.png); }
-#footer .help.settings h2 { background-image: url(../img/icons/settings.png); }
-
-#footer .help p {
-    color: #ddd;
-    margin-bottom: 0.5em;
-}
-
-
 /* rendering message wrapper */
 #rendering {
+    display: none;
     position: absolute;
     width: 50%;
     right: 5%;
@@ -155,48 +131,139 @@ body {
     text-align: center;
 }
 
+#workspace_wrapper {
+    width: 100%;
+    overflow: hidden;
+    border-top: 1px solid white;
+    border-bottom: 1px solid #fff;
+}
+
 #workspace {
     margin: 0 auto;
-    
+    background: transparent url(../img/layout/contentbg_footer.jpg) left bottom repeat-x;
+    padding-bottom: 56px;
+}
+
+#fractal_container {
+    position: relative;
+    margin: 3em auto;
+    padding: 3px;
+    border: 1px solid #fff;
+    background: #5d5b35;
+}
+
+h2#timeline_title {
+    position: relative;
+    margin: 1em auto 0.2em auto;
+    width: 50%;
+    border: 1px solid #5d5b35;
+    padding: 0.2em 0.3em;
+    background: #fff;
+    color: #5d5b35; 
 }
 
 #timeline {
     position: relative;
+    margin: 0 auto;
+    width: 50%;
+    overflow: hidden;
 }
  
 #timeline #history {
-    margin: 0 auto;
     overflow-x: auto;
     overflow-y: hidden;
-    border: 2px solid #ddd;
 }
 
 #timeline #history canvas {
-    margin: 3px 0 0 3px;
-    border: 1px solid #000;
-    opacity: 0.5;
+    margin: 5px 5px 0 0;
+    border: 3px solid #d7d39a;
+    opacity: 0.3;
 }
 
 #timeline #history canvas.active {
     opacity: 1;
+    border-color: #5d5b35;
 }
 
 #timeline #history canvas:hover {
     opacity: 1;
-    border-color: #f00;
+    border-color: #5d5b35;
 }
 
-#timeline #play {
+#timeline_title #play {
     position: absolute;
-    top: 0;
-    right: 0;
-    width: 50px;
-    height: 100%;
-    border: 2px solid #ddd;
-    background: #fff url(../img/play.png) no-repeat;
+    top: 0.2em;
+    right: 0.2em;
+    width: 79px;
+    height: 22px;
+    cursor: pointer;
+    background: transparent url(../img/buttons/play.png) no-repeat;
+}
+
+#timeline_title #play:hover {
+    background-position: 0 -22px;
 }
 
 #timeline #play:hover {
     background-color: #ddd;
+}
+
+#footer {
+    position: relative;
+    width: 100%;
+    background: #6d675e url(../img/layout/footbg.jpg) repeat-x;   
+}
+
+#footer #help {
+    width: 100%;
+    overflow: hidden;
+}
+
+#footer .help {
+    float: left;
+    width: 16%;
+    padding: 2% 2% 2% 2%;
+}
+
+#footer .help h2 {
+    color: #fff;
+    border-bottom: 1px solid #222;
+    padding-bottom: 0.3em;
+    margin-bottom: 0.3em;
+    padding-left: 32px;
+    background-repeat: no-repeat;
+}
+
+#footer .help.about h2 { background-image: url(../img/icons/about.png); }
+#footer .help.zoom h2 { background-image: url(../img/icons/zoom.png); }
+#footer .help.timeline h2 { background-image: url(../img/icons/timeline.png); }
+#footer .help.bookmark h2 { background-image: url(../img/icons/bookmark.png); }
+#footer .help.settings h2 { background-image: url(../img/icons/settings.png); }
+
+#footer .help p {
+    color: #ddd;
+    margin-bottom: 0.5em;
+}
+
+#footer > p {
+    color: #555;
+    text-align: right;
+    margin: 0 2% 0 2%;
+    padding: 0.2em;
+}
+
+#footer > p span {
+    color: #333;
+    font-weight: bold;
+    
+}
+
+#footer > p a {
+    color: #ddd;
+    text-decoration: underline;
+}
+
+#footer > p a:hover {
+    color: #050;
 }
 

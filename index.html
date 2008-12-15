@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>JS Fractal Prototype</title>
     <script type="text/javascript" src="lib/firebugx.js"></script>
     <script type="text/javascript" src="lib/mootools-1.2-core-nc.js"></script>
@@ -16,12 +17,12 @@
 	<script type="text/javascript" src="js/JSF_GUI.js"></script>
     <script type="text/javascript" src="js/JSF_History.js"></script>
 	<script type="text/javascript" src="js/JSFractal.js"></script>
-    <script type="text/javascript">
-
+    <script type="text/javascript">//<![CDATA[
+        
         window.addEvent('domready', function() {
 
             // compatibility check
-            if (1!=1 && !$defined($('fractal').getContext)) {
+            if (!(new Element('canvas'))) {
             
                 // show non-compatible message
                 $('wrapper').setStyle('display', 'none');
@@ -32,11 +33,12 @@
                 JSF = new JSFractal('fractal_container', 'fractal', 'history');
             }
         });
-
-    </script>
+        
+    //]]></script>
     <link type="text/css" rel="stylesheet" href="css/style.css"></link>
 </head>
 <body>
+    
     <!-- for browsers without canvas -->
     <div id="non-compatible">
         <h1>Sorry!</h1>
@@ -46,99 +48,108 @@
             <li><a href="http://www.mozilla.com/">Mozilla Firefox</a></li>
             <li><a href="http://www.apple.com/safari/">Safari</a></li>
             <li><a href="http://www.opera.com/products/desktop/">Opera</a></li>
+            <li><a href="http://www.google.com/chrome/">Google Chrome</a></li>
         </ul>
     </div>
     
-    <!-- header -->
-    <div id="header">
-        <h1>JS Fractal</h1>
-        <div id="options">
-            <form id="jsf_settings">
-                <div>
-                    <select id="jsf_settings_size" name="size">
-                        <option value="small">Tiny (fast!)</option>
-                        <option value="medium" selected="selected">Normal</option>
-                        <option value="large">Large (slow!)</option>
-                    </select>
-                    <label for="jsf_settings_size">Size</label>
-                </div>
-                <div>
-                    <select id="jsf_settings_quality" name="quality">
-                        <option value="low">Low</option>
-                        <option value="medium" selected="selected">Medium</option>
-                        <option value="high">High</option>
-                        <option value="ultra">Ultra!</option>
-                    </select>
-                    <label for="jsf_settings_quality">Quality</label>
-                </div>
-                <div>
-                    <select id="jsf_settings_colours" name="colours">
-                        <option value="fire" selected="selected">Hell Fire</option>
-                    </select>
-                    <label for="jsf_settings_colours">Colours</label>
-                </div>
-                <div>
-                    <input type="submit" name="submit_change" value="Update" />
-                    <input type="submit" name="submit_new" value="New" />
-                </div>
-            </form>
+    <div id="wrapper">
+         
+        <!-- header -->
+        <div id="header">
+            <h1>JS Fractal</h1>
+            <p id="help_link">What do I do?</p>
+            <div id="options">
+                <form id="jsf_settings" action="">
+                    <div>
+                        <select id="jsf_settings_size" name="size">
+                            <option value="small">Tiny (fast!)</option>
+                            <option value="medium" selected="selected">Normal</option>
+                            <option value="large">Large (slow!)</option>
+                        </select>
+                        <label for="jsf_settings_size">Size</label>
+                    </div>
+                    <div>
+                        <select id="jsf_settings_quality" name="quality">
+                            <option value="low">Low</option>
+                            <option value="medium" selected="selected">Medium</option>
+                            <option value="high">High</option>
+                            <option value="ultra">Ultra!</option>
+                        </select>
+                        <label for="jsf_settings_quality">Quality</label>
+                    </div>
+                    <div>
+                        <select id="jsf_settings_colours" name="colours">
+                            <option value="fire" selected="selected">Hell Fire</option>
+                        </select>
+                        <label for="jsf_settings_colours">Colours</label>
+                    </div>
+                    <div>
+                        <div id="jsf_settings_submit_update"></div>
+                        <div id="jsf_settings_submit_reset"></div>
+                    </div>
+                </form>
+            </div>
+            <div id="rerender">
+                Changing these settings will redraw the current fractal.
+            </div>
         </div>
-        <div id="rerender">
-            Changing these settings will redraw the current fractal.
-        </div>
-    </div>
     
-    <!-- main fractal dom root -->
-    <div id="workspace_wrapper">
-        
-        <div id="workspace">
-            <div id="fractal_container" style="position: relative">
-                <div id="rendering">
-                    <div id="rendering_bg">&nbsp;</div>
-                    <div id="rendering_message">
-                        Drawing ... <span id="rendering_status"></span>
+        <!-- main fractal dom root -->
+        <div id="workspace_wrapper">
+            
+            <div id="workspace">
+    
+                <div id="fractal_container">
+                    <div id="rendering">
+                        <div id="rendering_bg">&nbsp;</div>
+                        <div id="rendering_message">
+                            Drawing ... <span id="rendering_status"></span>
+                        </div>
                     </div>
                 </div>
-            </div>
     
-            <div id="timeline">
-                <div id="history"></div>
-                <div id="play"></div>
+                <h2 id="timeline_title">Timeline<span id="play"></span></h2>
+                <div id="timeline">
+                    <div id="history"></div>
+                    
+                </div>
             </div>
+            
         </div>
         
-    </div>
-    
-    <!-- footer -->
-    <div id="footer">
-        <div id="help">
-            <div class="help about">
-                <h2>What is this?</h2>
-                <p>A fractal is generally "a rough or fragmented geometric shape that can be split into parts, each of which is (at least approximately) a reduced-size copy of the whole".</p>
-                <p>Todo: rewrite the above ;-)</p>
+        <!-- footer -->
+        <div id="footer">
+            <div id="help">
+                <div class="help about">
+                    <h2>What is this?</h2>
+                    <p>A fractal is generally "a rough or fragmented geometric shape that can be split into parts, each of which is (at least approximately) a reduced-size copy of the whole".</p>
+                    <p>Todo: rewrite the above ;-)</p>
+                </div>
+                <div class="help zoom">
+                    <h2>Zoom!</h2>
+                    <p>Use the mouse to drag-select an area of the fractal to zoom in to.</p>
+                    <p>This will enlarge the area you have selected and draw it in higher detail.</p>
+                    <p>There is no theoretical limit to how deep you can zoom.</p>
+                </div>
+                <div class="help timeline">
+                    <h2>Timeline</h2>
+                    <p>As you explore deeper in to the fractal, each previous location is added to the <strong>timeline</strong>.</p>
+                    <p>You can flip back to any previous state by clicking on the corresponding icon. If you wish, you may head off in a new direction from this previous point. Clicking <strong>play</strong> will animate the whole sequence.</p>
+                </div>
+                <div class="help bookmark">
+                    <h2>Bookmark</h2>
+                    <p>You can save any fractal to come back to later simply by bookmarking the page.</p>
+                    <p>This URL can be shared as it will always redraw the current fractal.</p>
+                </div>
+                <div class="help settings">
+                    <h2>Settings</h2>
+                    <p>Depending on the speed of your computer and browser, you may wish to adjust the quality and size settings of the fractal. You can also change the colour scheme.</p>
+                    <p>Click the update button to redraw the current fractal with the new settings.</p>
+                </div>
             </div>
-            <div class="help zoom">
-                <h2>Zoom!</h2>
-                <p>Use the mouse to drag-select an area of the fractal to zoom in to.</p>
-                <p>This will enlarge the area you have selected and draw it in higher detail.</p>
-                <p>There is no theoretical limit to how deep you can zoom.</p>
-            </div>
-            <div class="help timeline">
-                <h2>Timeline</h2>
-                <p>As you explore deeper in to the fractal, each previous location is added to the <strong>timeline</strong>.</p>
-                <p>You can flip back to any previous state by clicking on the corresponding icon. If you wish, you may head off in a new direction from this previous point. Clicking <strong>play</strong> will animate the whole sequence.</p>
-            </div>
-            <div class="help bookmark">
-                <h2>Bookmark</h2>
-                <p>You can save any fractal to come back to later simply by bookmarking the page.</p>
-                <p>This URL can be shared as it will always re-render the current fractal.</p>
-            </div>
-            <div class="help settings">
-                <h2>Settings</h2>
-                <p>Depending on the speed of your computer and browser, you may wish to increase the quality and size settings of the fractal. You can also change the colour scheme.</p>
-                <p>Click the update button to redraw the current fractal with the new settings.</p>
-            </div>
+            <p><span>JSFractal</span> by <span>Russ Hall</span> <span>&raquo;</span> <a href="http://2tap.com">Project page</a></p>
         </div>
+        
     </div>
 </body>
 </html>

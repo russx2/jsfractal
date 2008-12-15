@@ -24,10 +24,15 @@ var JSF_GUI = new Class({
         str_settings_size: { id: 'jsf_settings_size', initial: 'medium' },
         str_settings_quality: { id: 'jsf_settings_quality', initial: 'medium' },
         str_settings_colours: { id: 'jsf_settings_colours', initial: 'fire' },
+        str_settings_submit: { id: 'jsf_settings_submit_update' },
         
         // rendering element
         str_rendering_id: 'rendering',
-        str_rendering_status_id: 'rendering_status'
+        str_rendering_status_id: 'rendering_status',
+        
+        // help text/areas
+        str_help_link_id: 'help_link',
+        str_help_area_id: 'footer'
     },
  
 	
@@ -49,10 +54,14 @@ var JSF_GUI = new Class({
         $(this.options.str_settings_colours.id).getElement('option[value=' + this.options.str_settings_colours.initial +']').set('selected', true);
         
         // hook ourselves into the fractal settings form
-        $(this.options.str_settings_form_id).addEvent('submit', this._event_settings_change.bindWithEvent(this));
+        $(this.options.str_settings_submit.id).addEvent('click', this._event_settings_change.bindWithEvent(this));
+        
+        // link help link to help area
+        $(this.options.str_help_link_id).addEvent('click', this.scroll_to_help.bind(this));
 	},
     
     show_rendering: function(boo) {
+        
         $(this.options.str_rendering_id).setStyle('display', boo ? 'block' : 'none');
         
         // clear the status percentage regardless of whether we're showing or hiding
@@ -60,6 +69,7 @@ var JSF_GUI = new Class({
     },
     
     update_loading: function(int_percentage) {
+        
         $(this.options.str_rendering_status_id).set('html', int_percentage + '%');
     },
     
@@ -76,6 +86,11 @@ var JSF_GUI = new Class({
         };
         
         this.fireEvent('onSettingsChange', obj_settings);
+    },
+    
+    scroll_to_help: function() {
+        
+        (new Fx.Scroll(document.window)).toElement(this.options.str_help_area_id);
     },
 	
 	zoom_preview: function(int_history_idx, obj_selection_coords, fun_callback) {
