@@ -25,6 +25,7 @@ var JSF_GUI = new Class({
         str_settings_quality: { id: 'jsf_settings_quality', initial: 'medium' },
         str_settings_colours: { id: 'jsf_settings_colours', initial: 'fire' },
         str_settings_submit: { id: 'jsf_settings_submit_update' },
+        str_settings_reset: { id: 'jsf_settings_submit_reset' },
         
         // rendering element
         str_rendering_id: 'rendering',
@@ -56,6 +57,7 @@ var JSF_GUI = new Class({
         
         // hook ourselves into the fractal settings form
         $(this.options.str_settings_submit.id).addEvent('click', this._event_settings_change.bindWithEvent(this));
+        $(this.options.str_settings_reset.id).addEvent('click', this._event_settings_reset.bindWithEvent(this));
         
         // link help link to help area
         $(this.options.str_help_link_id).addEvent('click', this.scroll_to_help.bind(this));
@@ -87,6 +89,18 @@ var JSF_GUI = new Class({
         };
         
         this.fireEvent('onSettingsChange', obj_settings);
+    },
+    
+    _event_settings_reset: function(obj_event) {
+        
+        // prevent the event from propogating
+        obj_event.stop();
+        
+        if(window.confirm('Start a new fractal with default settings?')) {
+            
+            // effectively refresh the page, ensuring the hash isn't present in the url
+            window.location = window.location.pathname;
+        }
     },
     
     scroll_to_help: function() {

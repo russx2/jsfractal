@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>JS Fractal Prototype</title>
+    <title>JSFractal</title>
     <script type="text/javascript" src="lib/firebugx.js"></script>
     <script type="text/javascript" src="lib/mootools-1.2-core-nc.js"></script>
     <script type="text/javascript" src="lib/mootools-1.2-more-nc.js"></script>
@@ -56,41 +56,39 @@
          
         <!-- header -->
         <div id="header">
-            <h1>JS Fractal</h1>
-            <p id="help_link">What do I do?</p>
+            <h1><a href="index.html">JS Fractal</a></h1>
+            <p id="help_link"><strong>Help!</strong> What do I do?</p>
             <div id="options">
                 <form id="jsf_settings" action="">
                     <div>
+                        <label for="jsf_settings_size">Size</label>
                         <select id="jsf_settings_size" name="size">
                             <option value="small">Tiny (fast!)</option>
                             <option value="medium" selected="selected">Normal</option>
                             <option value="large">Large (slow!)</option>
                         </select>
-                        <label for="jsf_settings_size">Size</label>
                     </div>
                     <div>
+                        <label for="jsf_settings_quality">Quality</label>
                         <select id="jsf_settings_quality" name="quality">
                             <option value="low">Low</option>
                             <option value="medium" selected="selected">Medium</option>
                             <option value="high">High</option>
                             <option value="ultra">Ultra!</option>
                         </select>
-                        <label for="jsf_settings_quality">Quality</label>
                     </div>
                     <div>
+                        <label for="jsf_settings_colours">Colours</label>
                         <select id="jsf_settings_colours" name="colours">
                             <option value="fire" selected="selected">Hell Fire</option>
                         </select>
-                        <label for="jsf_settings_colours">Colours</label>
-                    </div>
-                    <div>
                         <div id="jsf_settings_submit_update"></div>
                         <div id="jsf_settings_submit_reset"></div>
                     </div>
                 </form>
             </div>
             <div id="rerender">
-                Changing these settings will redraw the current fractal.
+                Updating these settings will redraw the current fractal.
             </div>
         </div>
     
@@ -103,7 +101,7 @@
                     <div id="rendering">
                         <div id="rendering_bg">&nbsp;</div>
                         <div id="rendering_message">
-                            Drawing ... <span id="rendering_status"></span>
+                            Busy ... <span id="rendering_status"></span>
                         </div>
                     </div>
                 </div>
@@ -147,8 +145,10 @@
                     <p>Click the update button to redraw the current fractal with the new settings.</p>
                 </div>
             </div>
-            <p><span>JSFractal</span> by <span>Russ Hall</span> <span>&raquo;</span> <a href="http://2tap.com">Project page</a></p>
-            <p>Last render took: <span id="render_time">0</span> milliseconds</p>
+            <p>
+                <span>JSFractal</span> by <span>Russ Hall</span> <span class="divider">&raquo;</span> <a href="http://2tap.com">Project page</a> <span class="divider">&raquo;</span> 
+                Last render: <span id="render_time">0</span> milliseconds
+            </p>
         </div>
         
     </div>

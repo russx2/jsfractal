@@ -78,6 +78,26 @@ var JSFractal = new Class({
         // set initial default plane coordinates
         this.obj_plane_coords = this.obj_settings.plane_coords_initial;
         
+        // are coordinates being passed in the url hash? if so, override defaults
+        if(window.location.hash) {
+            
+            var arr_coordinates = window.location.hash.replace(/#/, '').split('|');
+            
+            if(arr_coordinates.length == 8) {
+                
+                // override coords
+                this.obj_plane_coords = {
+                    x: [arr_coordinates[0].toFloat(), arr_coordinates[2].toFloat()],
+                    y: [arr_coordinates[1].toFloat(), arr_coordinates[3].toFloat()]
+                };
+                
+                this.obj_canvas_coords = {
+                    x: [arr_coordinates[4].toFloat(), arr_coordinates[6].toFloat()],
+                    y: [arr_coordinates[5].toFloat(), arr_coordinates[7].toFloat()]
+                };
+            }
+        }
+        
 		// render initial top level fractal (with default settings)
         this._change_settings({
             size: 'medium',
@@ -142,8 +162,6 @@ var JSFractal = new Class({
         // calculate plane coords from the (canvas based) selection coords
         var obj_plane_coords = JSF_Util.canvas_coords_to_fractal(this.str_canvas_id, this.obj_plane_coords, obj_selection_coords);
 
-//window.location.hash = JSF_Util.base64_encode(obj_plane_coords.x[0]) + '|' + JSF_Util.base64_encode(obj_plane_coords.y[0]) + '|' + JSF_Util.base64_encode(obj_plane_coords.x[1]) + '|' + JSF_Util.base64_encode(obj_plane_coords.y[1]);
-	
     	// store new coordinates
 		this.obj_plane_coords = obj_plane_coords;
         this.obj_canvas_coords = obj_selection_coords;
@@ -156,6 +174,9 @@ var JSFractal = new Class({
   
         // add this newly rendered fractal to the history
         this.obj_history.add(this.obj_plane_coords, this.obj_canvas_coords);
+        
+        // update url coordinates
+        this.update_url_coordinates();
         
         // remove event locks
         this._lock(false);
@@ -199,6 +220,9 @@ var JSFractal = new Class({
         
         // update current coordinates
         this.obj_plane_coords = obj_history.obj_plane_coords;
+        
+        // update url coordinates
+        this.update_url_coordinates();
     },
     
     __play: function() {
@@ -231,7 +255,36 @@ var JSFractal = new Class({
         // set active
         this.obj_history.set_active(this.obj_history.count() - 1);
         
+        // update url coordinates
+        this.update_url_coordinates();
+        
         this._lock(false);
+    },
+    
+    update_url_coordinates: function() {
+        
+        var obj_plane_coords = this.obj_plane_coords;
+        var obj_canvas_coords = this.obj_canvas_coords;
+        
+        // if no canvas coords exist yet, it means this is the initial fractal.
+        // in this case, don't bother storing the URL coords since it's the
+        // default anyway
+        if(!obj_canvas_coords) {
+            return;
+        }
+        
+        // construct url hash parameter
+        var str_hash = obj_plane_coords.x[0] + '|' + 
+                       obj_plane_coords.y[0] + '|' + 
+                       obj_plane_coords.x[1] + '|' + 
+                       obj_plane_coords.y[1] + '|' +
+                       obj_canvas_coords.x[0] + '|' + 
+                       obj_canvas_coords.y[0] + '|' + 
+                       obj_canvas_coords.x[1] + '|' + 
+                       obj_canvas_coords.y[1];
+    
+        // store in the hash
+        window.location.hash = str_hash;
     },
     
     _lock: function(boo) {

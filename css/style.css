@@ -30,7 +30,7 @@ body {
 
 #header h1 {
     position: absolute;
-    top: 45px;
+    top: 30px;
     left: 60px;
     width: 226px;
     height: 56px;
@@ -38,12 +38,27 @@ body {
     text-indent: -9000px;
 }
 
+#header h1 a {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
 #header p {
     position: absolute;
-    top: 105px;
-    left: 65px;
+    top: 90px;
+    left: 64px;
+    width: 220px;
     color: #222;
     text-decoration: underline;
+    padding: 0.2em;
+}
+
+#header p strong {
+    font-size: 1.5em;
+    padding-right: 0.3em;
 }
 
 #header p:hover {
@@ -55,9 +70,11 @@ body {
     position: absolute;
     top: 30px;
     right: 220px;
+    clear: both;
 }
 
 #header #options > div {
+    position: relative;
     margin-bottom: 0.2em;
 }
 
@@ -68,20 +85,31 @@ body {
 }
 
 #header #options label {
+    display: block;
+    float: left;
+    width: 10em;
+    margin-right: 1em;
     color: white;
     font-weight: bold;
     vertical-align: middle;
-    margin-left: 0.5em;
+    text-align: right;
 }
 
-#header #jsf_settings_submit_update {
-    margin: 8px 0 0 -3px;
+#header #jsf_settings_submit_update, #header #jsf_settings_submit_reset {
+    position: absolute;
+    right: 0;
+    bottom: -2em;
     width: 79px;
     height: 22px;
     background: transparent url(../img/buttons/update.png) no-repeat;
 }
 
-#header #jsf_settings_submit_update:hover {
+#header #jsf_settings_submit_reset {
+    right: 90px;
+    background: transparent url(../img/buttons/reset.png) no-repeat;
+}
+
+#header #jsf_settings_submit_update:hover, #header #jsf_settings_submit_reset:hover {
     cursor: pointer;
     background-position: 0 -22px;
 }
@@ -92,23 +120,25 @@ body {
     right: 40px;
     width: 130px;
     color: white;
+    padding-left: 1.4em;
+    border-left: 1px solid #3F550C;
 }
 
 /* rendering message wrapper */
 #rendering {
     display: none;
     position: absolute;
-    width: 50%;
+    width: 75%;
     right: 5%;
     top: 5%;
-    border: 1px solid #444;
+    border: 1px solid #5d5b35;
 }
 
 /* rendering message background (separate div to achieve opacity) */
 #rendering_bg {
     width: 100%;
     height: 100%;
-    background: black;
+    background: #000;
     opacity: 0.5;
 }
 
@@ -122,13 +152,15 @@ body {
     text-align: left;
     vertical-align: middle;
     padding-left: 30px;
-    background: url(../img/icons/rendering.png) no-repeat;
+    background: url(../img/icons/rendering.png) no-repeat left center;
 }
 
 #rendering_status {
     position: absolute;
     bottom: 0;
     text-align: center;
+    padding: 0 0.2em;
+    font-weight: normal;
 }
 
 #workspace_wrapper {
@@ -255,7 +287,10 @@ h2#timeline_title {
 #footer > p span {
     color: #333;
     font-weight: bold;
-    
+}
+
+#footer > p span.divider {
+    padding: 0 0.5em;
 }
 
 #footer > p a {
@@ -264,6 +299,11 @@ h2#timeline_title {
 }
 
 #footer > p a:hover {
-    color: #050;
+    color: #000;
+}
+
+#footer #render_time {
+    font-style: italic;
+    padding: 0 0.3em;
 }
 
