@@ -1,4 +1,10 @@
-
+/*
+ * Rendering strategy: DataURL
+ * 
+ * Creates an image from a DataURL before drawing to the canvas
+ * 
+ * See parent class for documentation on initialize, start, render and complete methods.
+ */
 var JSF_Render_Strategy__DataURL = new Class({
 	
     Extends: JSF_Render_Strategy,
@@ -36,7 +42,14 @@ var JSF_Render_Strategy__DataURL = new Class({
         this._render_data_url();
     },
     
-    //http://neil.fraser.name/software/bmp_lib/bmp_lib.js
+    /**
+     * Utility method to build the canvas graphic from a constructed data URL.
+     * 
+     * Heavily based on a section of Neil Fraser's JavaScript BMP library:
+     * http://neil.fraser.name/software/bmp_lib/bmp_lib.js
+     * 
+     * @return void
+     */
     _render_data_url: function() {
         
          var str_bm_header = 'BMxxxx\0\0\0\0yyyy';

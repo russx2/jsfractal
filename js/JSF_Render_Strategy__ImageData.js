@@ -1,4 +1,13 @@
-
+/*
+ * Rendering strategy: ImageData
+ * 
+ * Creates the image using the getImageData method of the canvas and then manipulating
+ * the pixel array directly before drawing back to the canvas.
+ * 
+ * Fast!
+ * 
+ * See parent class for documentation on initialize, start, render and complete methods.
+ */
 var JSF_Render_Strategy__ImageData = new Class({
 	
     Extends: JSF_Render_Strategy,

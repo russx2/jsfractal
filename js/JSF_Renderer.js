@@ -1,4 +1,17 @@
-
+/**
+ * Events fired:
+ * 
+ *     * onRenderStart 
+ *       Fired once at the beginning of the render
+ *       
+ *     * onRenderPause         
+ *       Fired before calling ourselves again (with slight pause). Passes
+ *       the percentage completed as the argument
+ *       
+ *     * onRenderComplete
+ *       Notifiers listeners of the render duration (passes time taken in ms)
+ *                           
+ */
 var JSF_Renderer = new Class({
 
 	Implements: Events,
@@ -22,6 +35,14 @@ var JSF_Renderer = new Class({
 	// stores a lookup of colours for non-Mandelbrot points (depending on escape speed)
 	arr_colours: null,
 
+    /**
+     * Constructor
+     * 
+     * @param str str_canvas_id        ID of the canvas to render to
+     * @param int int_num_iterations   Number of iterations of the equation to run before a
+     *                                 point is considered as non-escaping
+     * @return void
+     */
 	initialize: function(str_canvas_id, int_num_iterations) {
 	
 		// store canvas ID
@@ -50,6 +71,13 @@ var JSF_Renderer = new Class({
 		
 	},
     
+    /**
+     * Sets the umber of iterations of the equation to run before a point is 
+     * considered as non-escaping.
+     * 
+     * @param int int_iterations  Number of iterations
+     * @return void
+     */
     set_iterations: function(int_iterations) {
         this.int_num_iterations = int_iterations;  
     },
@@ -57,6 +85,8 @@ var JSF_Renderer = new Class({
     /**
      * Must be called after any updates to the iteration limit since this factors
      * into the size of the palette.
+     * 
+     * TODO: Refactor this out for multiple colour choices
      */
     build_colour_palette: function() {
         
@@ -64,8 +94,6 @@ var JSF_Renderer = new Class({
         this.arr_colours = new Array();
         
         for (var i = 0; i < this.int_num_iterations; i++) {
-
-            //this.arr_colours[i] = new Color('#f00').mix([0,255,0], (100/this.NUM_TESTS) * i).mix([0,0,255], 100 - ((100/this.NUM_TESTS) * i));
 
             var int_mod = 765 * i / this.int_num_iterations;
             var arr_colour;
@@ -95,6 +123,22 @@ var JSF_Renderer = new Class({
         }  
     },
 
+    /**
+     * Renders the passed fractal coordinates to the canvas. Calls itself repeatedly at various points
+     * on a timeout in order to get around any repeated execution limits (i.e. script timeout errors).
+     * 
+     * Performs the calculations for each pixel but passes the rendering off to be performed by
+     * the most appropriate rendering strategy (in chunks to not impact too much on performance).
+     * 
+     * @param obj obj_plane_coords  Coordinates to render (in x and y arrays)
+     * @param obj int_y_start       Starting y coordinate (internal use - ignore for external calling)
+     * 
+     * @event onRenderStart         Fired once at the beginning of the render (not per calling of the method)
+     * @event onRenderPause         Fired before calling ourselves again (with slight pause). Passes
+     *                              the percentage completed as the argument.
+     * 
+     * @return void
+     */
 	render: function(obj_plane_coords, int_y_start) {
 
         // retrieve canvas size
@@ -188,6 +232,16 @@ var JSF_Renderer = new Class({
         this.obj_render_strategy.complete(int_screen_width, int_screen_height);
 	},
     
+    /**
+     * Called when a render has completed. Fires an event for listers of this class.
+     * 
+     * @param int int_duration   How long (in ms) this render took to complete
+     * 
+     * @event onRenderComplete   Notifiers listeners of the render duration (passes time
+     *                           taken in ms)
+     *                           
+     * @return void
+     */
     _event_render_complete: function(int_duration) {
         
         // notify listeners

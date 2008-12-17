@@ -1,4 +1,9 @@
-
+/**
+ * Events fired:
+ * 
+ *     * onSelection
+ *       Fired when the user completes a selection (passes the selected coordinates as the argument)
+ */
 var JSF_Selector = new Class({
 	
 	Implements: Events,
@@ -14,7 +19,15 @@ var JSF_Selector = new Class({
     // Note: we assume all properties are symmetrical on each of the 4 sides
     int_container_border: 0,
 
-	
+	/**
+	 * Constructor
+	 * 
+	 * Sets up the selection element and behaviour.
+	 * 
+	 * @param str str_container_id  ID of the container element to bind our selector element to
+	 * 
+	 * @return void
+	 */
 	initialize: function(str_container_id) {
 
 		// store container coordinates
@@ -48,6 +61,12 @@ var JSF_Selector = new Class({
 		});    
 	},
 	
+    /**
+     * Resets the selector element to its "listening" state (covering the container
+     * area, invisible and waiting for a click).
+     * 
+     * @return void
+     */
 	reset: function() {
 
         // hide the selection area from view but allow it to still be
@@ -76,6 +95,14 @@ var JSF_Selector = new Class({
 		});
 	},
 	
+    /**
+     * Called once the user initiates a click-drag behaviour. Sets up the selection
+     * element and limits the selection area to the container boundary.
+     * 
+     * @param obj obj_event  Event object
+     * 
+     * @return void
+     */
 	_event_start: function(obj_event) {
 
         var obj_container_coords = $(this.str_container_id).getCoordinates();
@@ -105,6 +132,14 @@ var JSF_Selector = new Class({
     	};
     },
 	
+    /**
+     * Called every time the user drags the selection element. Ensures an aspect ratio
+     * of 1:1 is maintained.
+     * 
+     * @param obj obj_event  Event object
+     * 
+     * @return void
+     */
 	_event_drag: function(obj_event) {
 
 		var elm = this.elm_selection;
@@ -119,6 +154,17 @@ var JSF_Selector = new Class({
         }
 	},
 	
+    /**
+     * Called once the user has completed the click-drag event. Calculates
+     * the selected coordinates relative to the container and fires an event
+     * for listeners to handle.
+     * 
+     * @param obj obj_event  Event object
+     * 
+     * @event onSelection  Passes the selected coordinates as the argument
+     * 
+     * @return void
+     */
 	_event_complete: function(obj_event) {
 				
 		var obj_coords = this.elm_selection.getCoordinates();

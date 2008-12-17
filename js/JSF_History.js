@@ -1,4 +1,9 @@
-
+/**
+ * Events fired:
+ * 
+ *     * onHistorySelect
+ *       Fired when the user selects a history item
+ */
 var JSF_History = new Class({
    
     Implements: Events,
@@ -9,6 +14,14 @@ var JSF_History = new Class({
     str_history_id: null,
     str_canvas_id: null,
     
+    /**
+     * Constructor
+     * 
+     * @param str str_canvas_id   ID of the canvas element to use
+     * @param str str_history_id  ID of the history element to use
+     * 
+     * @return void
+     */
     initialize: function(str_canvas_id, str_history_id) {
     
         // store canvas reference
@@ -21,12 +34,25 @@ var JSF_History = new Class({
         this.clear();
     },
     
+    /**
+     * Clears the current history
+     * 
+     * @return void
+     */
     clear: function() {
     
         this.arr_history = new Array();
         this._get_elements().dispose().destroy();
     },
     
+    /**
+     * Adds the current fractal to the history (storing the passed plane and
+     * canvas coords for future processing).
+     * 
+     * @param obj obj_plane_coords   Fractal plane coords of this item
+     * @param obj obj_canvas_coords  Canvas coords of this item
+     * @return void
+     */
     add: function(obj_plane_coords, obj_canvas_coords) {
     
         var elm_canvas = $(this.str_canvas_id);
@@ -69,20 +95,42 @@ var JSF_History = new Class({
         this.set_active(int_history_idx);
     },
     
+    /**
+     * Returns the current history length
+     * 
+     * @return Number of items in the history
+     */
     count: function() {
         return this.arr_history.length;
     },
     
+    /**
+     * Retrieves an item from the history
+     * 
+     * @param int int_history_idx  Item index to retrieve (0 based index)
+     * 
+     * @return History object
+     */
     get: function(int_history_idx) {
     
         return this.arr_history[int_history_idx];
     },
     
+    /**
+     * Returns the last item from the history
+     * 
+     * @return History object
+     */
     get_last: function() {
     
         return this.arr_history[this.arr_history.length - 1];
     },
     
+    /**
+     * Sets the requested history index as active
+     * 
+     * @param int int_history_idx  History index to set
+     */
     set_active: function(int_history_idx) {
     
         // retrieve history elements (simultaneously removing any active classes)
@@ -95,10 +143,20 @@ var JSF_History = new Class({
         this.int_active_idx = int_history_idx;
     },
     
+    /**
+     * Retrieves the currently active history item's index
+     * 
+     * @return History item index
+     */
     get_active: function() {
         return this.int_active_idx;
     },
     
+    /**
+     * Removes all history items AFTER the currently active item
+     * 
+     * @return void
+     */
     delete_after_active: function() {
         
         // remove history data after the active selection
@@ -112,6 +170,11 @@ var JSF_History = new Class({
         }
     },
     
+    /**
+     * Removes all history items AFTER AND INCLUDING the currently active item
+     * 
+     * @return void
+     */
     delete_from_active: function() {
         
         // remove history data after the active selection
@@ -127,15 +190,25 @@ var JSF_History = new Class({
         this.int_active_idx--;
     },
     
-    delete_last: function() {
-        
-    },
-    
+    /**
+     * Selects all history canvases from the dom
+     * 
+     * @return Array of canvas elements
+     */
     _get_elements: function() {
     
         return $(this.str_history_id).getElements('canvas');
     },
     
+    /**
+     * Called when a history item is clicked. Notifies event listeners.
+     * 
+     * @param obj obj_event Event object
+     * 
+     * @event onHistorySelect  Notifies listeners, passing the index of the item clicked
+     * 
+     * @return void
+     */
     _event_click_history: function(obj_event) {
     
         var elm_target = $(obj_event.target);

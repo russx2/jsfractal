@@ -1,6 +1,15 @@
 
 JSF_Util = {
 	
+    /**
+     * Converts the passed canvas selection coordinates to fractal coordinates
+     * 
+     * @param str str_canvas_id         ID of the canvas element used
+     * @param obj obj_plane_coords      Current fractal coordinates of the canvas
+     * @param obj obj_selection_coords  Selection coordinates to convert
+     * 
+     * @return The fractal coordinates of the selection
+     */
 	canvas_coords_to_fractal: function(str_canvas_id, obj_plane_coords, obj_selection_coords) {
 
         var int_screen_width = $(str_canvas_id).getProperty('width');
@@ -24,7 +33,18 @@ JSF_Util = {
 		return obj_new_coords;
 	},
     
-    // taken from: http://neil.fraser.name/software/bmp_lib/bmp_lib.js
+
+    /**
+     * Encodes a number so it occupies the requested number of byes.
+     * 
+     * Heavily based on a section of Neil Fraser's JavaScript BMP library:
+     * http://neil.fraser.name/software/bmp_lib/bmp_lib.js
+     * 
+     * @param int number  Number to pad
+     * @param int bytes   Number of bytes for the number to occupy
+     * 
+     * @return Passed number
+     */
     multi_byte_encode: function(number, bytes) {
         
         if (number < 0 || bytes < 0) {
@@ -57,6 +77,16 @@ JSF_Util = {
         return string;
     },
     
+    /**
+     * Base64 encoder for browsers that do not support the btoa() method.
+     * 
+     * Heavily based on a section of Neil Fraser's JavaScript BMP library:
+     * http://neil.fraser.name/software/bmp_lib/bmp_lib.js
+     * 
+     * @param str str  String to encode
+     * 
+     * @return Base64 encoded string
+     */
     base64_encode: function(str) {
         
         if(window.btoa) {

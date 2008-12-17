@@ -40,7 +40,15 @@ var JSF_GUI = new Class({
         str_render_time_id: 'render_time'
     },
  
-	
+	/**
+	 * Constructor
+	 * 
+	 * @param obj obj_history     JSF_History object
+	 * @param str str_canvas_id   ID of the canvas element to use
+	 * @param str str_history_id  ID of the history element to use
+	 * @param str obj_options     Additional override options (optional)
+	 * @return void
+	 */
 	initialize: function(obj_history, str_canvas_id, str_history_id, obj_options) {
 		
         // save for internal use
@@ -66,6 +74,12 @@ var JSF_GUI = new Class({
         $(this.options.str_help_link_id).addEvent('click', this.scroll_to_help.bind(this));
 	},
     
+    /**
+     * Shows the "rendering" message area
+     * 
+     * @param boo boo  True to show, false to hide
+     * @return void
+     */
     show_rendering: function(boo) {
         
         $(this.options.str_rendering_id).setStyle('display', boo ? 'block' : 'none');
@@ -74,11 +88,25 @@ var JSF_GUI = new Class({
         $(this.options.str_rendering_status_id).set('html', '');
     },
     
+    /**
+     * Updates the rendering message area with the percentage completed
+     * 
+     * @param int int_percentage  Percentage complete
+     * @return void
+     */
     update_loading: function(int_percentage) {
         
         $(this.options.str_rendering_status_id).set('html', int_percentage + '%');
     },
     
+    /**
+     * Called when we receive input from the settings form. Extracts the options
+     * and fires an event for listeners to act on.
+     * 
+     * @param obj obj_event     The event object 
+     * @event onSettingsChange  Fires this event, passing the extracted options
+     * @return void
+     */
     _event_settings_change: function(obj_event) {
         
         // prevent the event from propogating
@@ -94,6 +122,14 @@ var JSF_GUI = new Class({
         this.fireEvent('onSettingsChange', obj_settings);
     },
     
+    /**
+     * Called when we receive input from the settings form intended to reset the
+     * fractal.
+     * 
+     * @param obj obj_event     The event object 
+     * @event onReset           Fires this event
+     * @return void
+     */
     _event_settings_reset: function(obj_event) {
         
         // prevent the event from propogating
@@ -102,15 +138,36 @@ var JSF_GUI = new Class({
         this.fireEvent('onReset');
     },
     
+    /**
+     * Scrolls the window to the help area
+     * 
+     * @return void
+     */
     scroll_to_help: function() {
         
         (new Fx.Scroll(document.window)).toElement(this.options.str_help_area_id);
     },
     
+    /**
+     * Updates the rendering time element with a new value
+     * 
+     * @param str str_time  String to set
+     * @return void
+     */
     show_render_time: function(str_time) {
         $(this.options.str_render_time_id).set('html', str_time);  
     },
 	
+    /**
+     * Performs a "zoom" animation from the passed history index to the coordinates passed.
+     * Fakes the zoom in the sense that it merely crops and enlarges the current fractal
+     * image until only the destination remains.
+     * 
+     * @param int int_history_idx       ID of the fractal history to perform the zoom on
+     * @param obj obj_selection_coords  Coordinates to zoom to (canvas based)
+     * @param fun fun_callback          Function to callback once completed
+     * @return void
+     */
 	zoom_preview: function(int_history_idx, obj_selection_coords, fun_callback) {
 		
         var elm_canvas = $(this.str_canvas_id);
@@ -158,6 +215,17 @@ var JSF_GUI = new Class({
         this._zoom_preview(elm_canvas_history, $(this.str_canvas_id).getContext('2d'), obj_zoom_values, fun_callback, 0);
 	},
     
+    /**
+     * Worker method for the zoom_preview method. Repeated calls itself, zooming in a little more each time.
+     * 
+     * @param elm elm_canvas        Canvas element to render to
+     * @param obj obj_canvas_ctx    Canvas graphics context to render to
+     * @param obj obj_zoom_values   Constructed in zoom_preview method: pre-calculated values for the zoom
+     * @param fun fun_callback      Callback method to call once completed
+     * @param int i                 The current iteration of the zoom we're drawing
+     * 
+     * @return void
+     */
     _zoom_preview: function(elm_canvas, obj_canvas_ctx, obj_zoom_values, fun_callback, i) {
         
         var int_history_width = obj_zoom_values.history_width;
@@ -184,7 +252,15 @@ var JSF_GUI = new Class({
         this._zoom_preview.delay(5, this, [elm_canvas, obj_canvas_ctx, obj_zoom_values, fun_callback, i + 1]);
     },
     
-    __play: function(fun_callback) {
+    /**
+     * Plays the entire history sequence of fractals one after the other. Sets up a callChain to repeatedly
+     * call zoom_preview() until complete.
+     * 
+     * @param fun fun_callback  Method to callback once complete
+     * 
+     * @return void
+     */
+    play: function(fun_callback) {
         
         var fun_callchain_bind = this.callChain.bind(this);
         

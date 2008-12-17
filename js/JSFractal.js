@@ -41,7 +41,17 @@ var JSFractal = new Class({
     // set during animations etc. in order to prevent GUI manipulation
     boo_locked: false,
 	
-
+    /**
+     * Constructor
+     * 
+     * This is the entry point into JSFractal. Sets up the entire app.
+     * 
+     * @param str str_canvas_container_id  ID of the canvas container
+     * @param str str_canvas_id            ID of the canvas element itself
+     * @param str str_history_id           ID of the history element
+     * 
+     * @return void
+     */
 	initialize: function(str_canvas_container_id, str_canvas_id, str_history_id) {
 		
         this.str_canvas_container_id = str_canvas_container_id;
@@ -108,10 +118,18 @@ var JSFractal = new Class({
             colours: 'fire'
         });
         
-        // temp
+        // TODO: move the control of this functionality to the GUI class
         $('play').addEvent('click', this.__play.bind(this));
 	},
     
+    /**
+     * Takes in the passed settings and notifies/updates components of the change
+     * (e.g. changed canvas size, colour scheme or quality level).
+     * 
+     * @param obj obj_settings  The new settings to apply
+     * 
+     * @return void
+     */
     _change_settings: function(obj_settings) {
         
         if(this._is_locked()) {
@@ -141,6 +159,13 @@ var JSFractal = new Class({
         this.obj_renderer.render(this.obj_plane_coords);
     },
     
+    /**
+     * Removes the current canvas element for the fractal (if it exists) and replaces
+     * with a new one at the requested size
+     * 
+     * @param int int_width   New width (px)
+     * @param int int_height  New height (px)
+     */
     _create_canvas: function(int_width, int_height) {
         
         // remove any existing canvas elements
@@ -165,6 +190,13 @@ var JSFractal = new Class({
         elm_canvas.inject(this.str_canvas_container_id);
     },
     
+    /**
+     * Resets the application (simply updates the window.location field to ourselves,
+     * ensuring to remove the hash property first - otherwise we'd re-render the current
+     * fractal!
+     * 
+     * @return void
+     */
     _reset: function() {
         
         if(this._is_locked()) {
@@ -178,6 +210,18 @@ var JSFractal = new Class({
         }  
     },
 	
+    /**
+     * Renders the fractal of the requested selection coords. The actual fractal plane
+     * based coordinates are calculated as a function of the current fractal's coordinates
+     * and the passed canvas-based selection coords.
+     * 
+     * Prior to rendering we "lock" ourselves so we can ignore any events/requests during
+     * the rendering.
+     * 
+     * @param obj obj_selection_coords  Selection coordinates to render
+     * 
+     * @return void
+     */
 	render: function(obj_selection_coords) {
 
         this._lock(true);
@@ -193,6 +237,13 @@ var JSFractal = new Class({
 		this.obj_renderer.render(obj_plane_coords);
 	},
     
+    /**
+     * Called once the rendering has completed. Unlocks ourself.
+     * 
+     * @param int int_duration  Time the render took (ms)
+     * 
+     * @return void
+     */
     _event_render_complete: function(int_duration) { 
   
         // add this newly rendered fractal to the history
@@ -209,6 +260,13 @@ var JSFractal = new Class({
         this.obj_gui.show_render_time(int_duration);
     },
 	
+    /**
+     * Called when a user makes a selection.
+     * 
+     * Initiates the zoom -> render -> add to history sequence
+     * 
+     * @param obj obj_selection_coords  Coordinates (canvas based) of the selection
+     */
 	_event_selection: function(obj_selection_coords) {
         
         if(this._is_locked()) {
@@ -224,6 +282,14 @@ var JSFractal = new Class({
 		this.obj_gui.zoom_preview(this.obj_history.get_active(), obj_selection_coords, this.render.bind(this, obj_selection_coords));
 	},
 
+    /**
+     * Called when a user selects a history item to view. Switches the current fractal
+     * to the version selected and sets as the active history element.
+     * 
+     * @param int int_history_idx  The index of the history element selected
+     * 
+     * @return void
+     */
     _event_go_history: function(int_history_idx) {
 
         if(this._is_locked()) {
@@ -248,6 +314,13 @@ var JSFractal = new Class({
         this.update_url_coordinates();
     },
     
+    /**
+     * Initiates a "playback" of the timeline (zooming through all history elements).
+     * 
+     * TODO: Move this to the GUI class.
+     * 
+     * @return void
+     */
     __play: function() {
         
         if(this._is_locked()) {
@@ -261,9 +334,15 @@ var JSFractal = new Class({
         
         this._lock(true);
         
-        this.obj_gui.__play(this.show_current.bind(this));
+        this.obj_gui.play(this.show_current.bind(this));
     },
     
+    /**
+     * Shows the latest (current) fractal generated (that is, the last fractal
+     * added to the history).
+     * 
+     * @return void
+     */
     show_current: function() {
         
         // retrieve canvas from the history
@@ -284,6 +363,14 @@ var JSFractal = new Class({
         this._lock(false);
     },
     
+    /**
+     * Updates the fractal coordinates stored in the #hash part of the URL to the
+     * current coordinates.
+     * 
+     * Means a user can bookmark a fractal.
+     * 
+     * @return void
+     */
     update_url_coordinates: function() {
         
         var obj_plane_coords = this.obj_plane_coords;
@@ -310,6 +397,14 @@ var JSFractal = new Class({
         window.location.hash = str_hash;
     },
     
+    /**
+     * Set or unset the internal lock variable. This is used to avoid acting
+     * on events etc. whilst we are rendering or performing some other volatile
+     * operation.
+     * 
+     * @param boo boo  True to lock, false to unlock
+     * @return void
+     */
     _lock: function(boo) {
         this.boo_locked = boo;
         
@@ -321,6 +416,11 @@ var JSFractal = new Class({
         }
     },
     
+    /**
+     * Allows us to test whether the lock is active or not.
+     * 
+     * @return True if locked, false otherwise
+     */
     _is_locked: function() {
         return this.boo_locked;
     }
