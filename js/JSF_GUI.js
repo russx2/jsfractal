@@ -4,6 +4,9 @@
  * 
  *     * onSettingsChange(obj_settings)
  *       Fired when the user changes the settings form
+ *     
+ *     * onReset
+ *       Fired when the user attempts to start a new fractal from scratch
  */
 var JSF_GUI = new Class({
 	
@@ -96,11 +99,7 @@ var JSF_GUI = new Class({
         // prevent the event from propogating
         obj_event.stop();
         
-        if(window.confirm('Start a new fractal with default settings?')) {
-            
-            // effectively refresh the page, ensuring the hash isn't present in the url
-            window.location = window.location.pathname;
-        }
+        this.fireEvent('onReset');
     },
     
     scroll_to_help: function() {

@@ -47,6 +47,7 @@ var JSFractal = new Class({
         this.str_canvas_container_id = str_canvas_container_id;
 		this.str_canvas_id = str_canvas_id;
         
+        // for non-firebug users (we only use console.info)
         if(!console) {
             console = {};
             console.info = function(){};
@@ -73,7 +74,9 @@ var JSFractal = new Class({
         
 		obj_selector.addEvent('onSelection', this._event_selection.bind(this));
         obj_history.addEvent('onHistorySelect', this._event_go_history.bind(this));
+        
         obj_gui.addEvent('onSettingsChange', this._change_settings.bind(this));
+        obj_gui.addEvent('onReset', this._reset.bind(this));
         
         // set initial default plane coordinates
         this.obj_plane_coords = this.obj_settings.plane_coords_initial;
@@ -110,6 +113,13 @@ var JSFractal = new Class({
 	},
     
     _change_settings: function(obj_settings) {
+        
+        if(this._is_locked()) {
+            return;
+        }
+        
+        // lock gui
+        this._lock(true);
         
         // remove last item from history (we're replacing it)
         this.obj_history.delete_from_active();
@@ -153,6 +163,19 @@ var JSFractal = new Class({
         
         // add to the dom
         elm_canvas.inject(this.str_canvas_container_id);
+    },
+    
+    _reset: function() {
+        
+        if(this._is_locked()) {
+            return;
+        }
+      
+        if(window.confirm('Start a new fractal with default settings?')) {
+            
+            // effectively refresh the page, ensuring the hash isn't present in the url
+            window.location = window.location.pathname;
+        }  
     },
 	
 	render: function(obj_selection_coords) {
@@ -289,6 +312,13 @@ var JSFractal = new Class({
     
     _lock: function(boo) {
         this.boo_locked = boo;
+        
+        if(boo) {
+            $(document.body).addClass('locked');
+        }
+        else {
+            $(document.body).removeClass('locked');
+        }
     },
     
     _is_locked: function() {
