@@ -262,6 +262,15 @@ h2#timeline_title {
     padding: 2% 2% 2% 2%;
 }
 
+#footer .help a {
+    color: #333;
+}
+
+#footer .help a:hover {
+    color: #000;
+}
+
+
 #footer .help h2 {
     color: #fff;
     border-bottom: 1px solid #222;
