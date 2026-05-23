@@ -1,156 +1,126 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>JSFractal</title>
-    <script type="text/javascript" src="lib/firebugx.js"></script>
-    <script type="text/javascript" src="lib/mootools-1.4.5-core.js"></script>
-    <script type="text/javascript" src="lib/mootools-1.4.0.1-more.js"></script>
-	<script type="text/javascript" src="js/JSF_Util.js"></script>
-    <script type="text/javascript" src="js/JSF_Detect.js"></script>
-    <script type="text/javascript" src="js/JSF_Renderer.js"></script>
-    <script type="text/javascript" src="js/JSF_Render_Strategy.js"></script>
-    <script type="text/javascript" src="js/JSF_Render_Strategy__ImageData.js"></script>
-    <script type="text/javascript" src="js/JSF_Render_Strategy__DataURL.js"></script>
-    <script type="text/javascript" src="js/JSF_Render_Strategy__DrawRect.js"></script>
-    <script type="text/javascript" src="js/JSF_Selector.js"></script>
-	<script type="text/javascript" src="js/JSF_GUI.js"></script>
-    <script type="text/javascript" src="js/JSF_History.js"></script>
-	<script type="text/javascript" src="js/JSFractal.js"></script>
-    <script type="text/javascript">//<![CDATA[
-        
-        window.addEvent('domready', function() {
-
-            // compatibility check
-            if (!(new Element('canvas'))) {
-            
-                // show non-compatible message
-                $('wrapper').setStyle('display', 'none');
-                $('non-compatible').setStyle('display', 'block');
-            }
-            else {
-             
-                JSF = new JSFractal('fractal_container', 'fractal', 'history');
-            }
-        });
-        
-    //]]></script>
-    <link type="text/css" rel="stylesheet" href="css/style.css"></link>
-</head>
-<body>
-    
-    <!-- for browsers without canvas -->
+    <script src="/lib/firebugx.js"></script>
+    <script src="/lib/mootools-1.4.5-core.js"></script>
+    <script src="/lib/mootools-1.4.0.1-more.js"></script>
+    <script src="/js/JSF_Util.js"></script>
+    <script src="/js/JSF_Detect.js"></script>
+    <script src="/js/JSF_Renderer.js"></script>
+    <script src="/js/JSF_Render_Strategy.js"></script>
+    <script src="/js/JSF_Render_Strategy__ImageData.js"></script>
+    <script src="/js/JSF_Render_Strategy__DataURL.js"></script>
+    <script src="/js/JSF_Render_Strategy__DrawRect.js"></script>
+    <script src="/js/JSF_Selector.js"></script>
+    <script src="/js/JSF_GUI.js"></script>
+    <script src="/js/JSF_History.js"></script>
+    <script src="/js/JSFractal.js"></script>
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body>
     <div id="non-compatible">
-        <h1>Sorry!</h1>
-        <p>It appears your browser does not support the <em>canvas</em> element. It's quite likely you're using a version of Internet Explorer.</p>
-        <p>To view this content, please use the latest version of one of these browsers:</p>
-        <ul>
-            <li><a href="http://www.mozilla.com/">Mozilla Firefox</a></li>
-            <li><a href="http://www.apple.com/safari/">Safari</a></li>
-            <li><a href="http://www.opera.com/products/desktop/">Opera</a></li>
-            <li><a href="http://www.google.com/chrome/">Google Chrome</a></li>
-        </ul>
+      <h1>Sorry!</h1>
+      <p>It appears your browser does not support the <em>canvas</em> element. It's quite likely you're using a version of Internet Explorer.</p>
+      <p>To view this content, please use the latest version of one of these browsers:</p>
+      <ul>
+        <li><a href="https://www.mozilla.org/firefox/">Mozilla Firefox</a></li>
+        <li><a href="https://www.apple.com/safari/">Safari</a></li>
+        <li><a href="https://www.opera.com/">Opera</a></li>
+        <li><a href="https://www.google.com/chrome/">Google Chrome</a></li>
+      </ul>
     </div>
-    
+
     <div id="wrapper">
-         
-        <!-- header -->
-        <div id="header">
-            <h1><a href="index.html">JS Fractal</a></h1>
-            <p id="help_link"><strong>Help!</strong> What do I do?</p>
-            <div id="options">
-                <form id="jsf_settings" action="">
-                    <div>
-                        <label for="jsf_settings_size">Size</label>
-                        <select id="jsf_settings_size" name="size">
-                            <option value="small">Tiny (fast!)</option>
-                            <option value="medium" selected="selected">Normal</option>
-                            <option value="large">Large (slow!)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="jsf_settings_quality">Quality</label>
-                        <select id="jsf_settings_quality" name="quality">
-                            <option value="low">Low</option>
-                            <option value="medium" selected="selected">Medium</option>
-                            <option value="high">High</option>
-                            <option value="ultra">Ultra!</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="jsf_settings_colours">Colours</label>
-                        <select id="jsf_settings_colours" name="colours">
-                            <option value="fire" selected="selected">Hell Fire</option>
-                        </select>
-                        <div id="jsf_settings_submit_update" class="button"></div>
-                        <div id="jsf_settings_submit_reset" class="button"></div>
-                    </div>
-                </form>
+      <div id="header">
+        <h1><a href="/">JS Fractal</a></h1>
+        <p id="help_link"><strong>Help!</strong> What do I do?</p>
+        <div id="options">
+          <form id="jsf_settings" action="">
+            <div>
+              <label for="jsf_settings_size">Size</label>
+              <select id="jsf_settings_size" name="size">
+                <option value="small">Tiny (fast!)</option>
+                <option value="medium" selected>Normal</option>
+                <option value="large">Large (slow!)</option>
+              </select>
             </div>
-            <div id="rerender">
-                Updating these settings will redraw the current fractal.
+            <div>
+              <label for="jsf_settings_quality">Quality</label>
+              <select id="jsf_settings_quality" name="quality">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+                <option value="ultra">Ultra!</option>
+              </select>
             </div>
+            <div>
+              <label for="jsf_settings_colours">Colours</label>
+              <select id="jsf_settings_colours" name="colours">
+                <option value="fire" selected>Hell Fire</option>
+              </select>
+              <div id="jsf_settings_submit_update" class="button"></div>
+              <div id="jsf_settings_submit_reset" class="button"></div>
+            </div>
+          </form>
         </div>
-    
-        <!-- main fractal dom root -->
-        <div id="workspace_wrapper">
-            
-            <div id="workspace">
-    
-                <div id="fractal_container">
-                    <div id="rendering">
-                        <div id="rendering_bg">&nbsp;</div>
-                        <div id="rendering_message">
-                            Busy ... <span id="rendering_status"></span>
-                        </div>
-                    </div>
-                </div>
-    
-                <h2 id="timeline_title">Timeline<span id="play" class="button"></span></h2>
-                <div id="timeline">
-                    <div id="history"></div>
-                    
-                </div>
+        <div id="rerender">Updating these settings will redraw the current fractal.</div>
+      </div>
+
+      <div id="workspace_wrapper">
+        <div id="workspace">
+          <div id="fractal_container">
+            <div id="rendering">
+              <div id="rendering_bg">&nbsp;</div>
+              <div id="rendering_message">Busy ... <span id="rendering_status"></span></div>
             </div>
-            
+          </div>
+
+          <h2 id="timeline_title">Timeline<span id="play" class="button"></span></h2>
+          <div id="timeline">
+            <div id="history"></div>
+          </div>
         </div>
-        
-        <!-- footer -->
-        <div id="footer">
-            <div id="help">
-                <div class="help about">
-                    <h2>What is this?</h2>
-                    <p>JSFractal is a tool, or at least a toy, for exploring fractals entirely within a web browser.</p>
-                    <p>Head on over to the <a href="http://2tap.com/2008/12/18/jsfractal-javascript-fractal-explorer/">project page</a> for more information.</p>
-                </div>
-                <div class="help zoom">
-                    <h2>Zoom!</h2>
-                    <p>Use the mouse to drag-select an area of the fractal to zoom in to.</p>
-                    <p>This will enlarge the area you have selected and draw it in higher detail.</p>
-                    <p>There is no theoretical limit to how deep you can zoom.</p>
-                </div>
-                <div class="help timeline">
-                    <h2>Timeline</h2>
-                    <p>As you explore deeper in to the fractal, each previous location is added to the <strong>timeline</strong>.</p>
-                    <p>You can flip back to any previous state by clicking on the corresponding icon. If you wish, you may head off in a new direction from this previous point. Clicking <strong>play</strong> will animate the whole sequence.</p>
-                </div>
-                <div class="help bookmark">
-                    <h2>Bookmark</h2>
-                    <p>You can save any fractal to come back to later simply by bookmarking the page.</p>
-                    <p>This URL can be shared as it will always redraw the current fractal.</p>
-                </div>
-                <div class="help settings">
-                    <h2>Settings</h2>
-                    <p>Depending on the speed of your computer and browser, you may wish to adjust the quality and size settings of the fractal. You can also change the colour scheme.</p>
-                    <p>Click the update button to redraw the current fractal with the new settings.</p>
-                </div>
-            </div>
-            <p>
-                <span>JSFractal</span> by <span>Russ Hall</span> <span class="divider">&raquo;</span> <a href="http://2tap.com/2008/12/18/jsfractal-javascript-fractal-explorer/">Project page</a> <span class="divider">&raquo;</span> 
-                Last render: <span id="render_time">0</span> milliseconds
-            </p>
+      </div>
+
+      <div id="footer">
+        <div id="help">
+          <div class="help about">
+            <h2>What is this?</h2>
+            <p>JSFractal is a tool, or at least a toy, for exploring fractals entirely within a web browser.</p>
+            <p>Head on over to the <a href="https://2tap.com/2008/12/18/jsfractal-javascript-fractal-explorer/">project page</a> for more information.</p>
+          </div>
+          <div class="help zoom">
+            <h2>Zoom!</h2>
+            <p>Use the mouse to drag-select an area of the fractal to zoom in to.</p>
+            <p>This will enlarge the area you have selected and draw it in higher detail.</p>
+            <p>There is no theoretical limit to how deep you can zoom.</p>
+          </div>
+          <div class="help timeline">
+            <h2>Timeline</h2>
+            <p>As you explore deeper in to the fractal, each previous location is added to the <strong>timeline</strong>.</p>
+            <p>You can flip back to any previous state by clicking on the corresponding icon. If you wish, you may head off in a new direction from this previous point. Clicking <strong>play</strong> will animate the whole sequence.</p>
+          </div>
+          <div class="help bookmark">
+            <h2>Bookmark</h2>
+            <p>You can save any fractal to come back to later simply by bookmarking the page.</p>
+            <p>This URL can be shared as it will always redraw the current fractal.</p>
+          </div>
+          <div class="help settings">
+            <h2>Settings</h2>
+            <p>Depending on the speed of your computer and browser, you may wish to adjust the quality and size settings of the fractal. You can also change the colour scheme.</p>
+            <p>Click the update button to redraw the current fractal with the new settings.</p>
+          </div>
         </div>
-        
+        <p>
+          <span>JSFractal</span> by <span>Russ Hall</span> <span class="divider">&raquo;</span>
+          <a href="https://2tap.com/2008/12/18/jsfractal-javascript-fractal-explorer/">Project page</a>
+          <span class="divider">&raquo;</span>
+          Last render: <span id="render_time">0</span> milliseconds
+        </p>
+      </div>
     </div>
-</body>
+  </body>
 </html>
